@@ -7,18 +7,18 @@
 <meta name="description" content="Run the real zcash-toolkit source in your browser: shielded send, t-address refusal, payment proofs, x402 pay-per-call, MCP spending policy and privacy audit.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#07080a;--bg-2:#0c0e12;--surface:#101318;--surface-2:#151920;
   --line:rgba(255,255,255,.07);--line-2:rgba(255,255,255,.13);
-  --text:#eceef1;--muted:#8b929c;--dim:#5a616b;
+  --text:#eceef1;--muted:#9aa1ab;--dim:#5a616b;
   --gold:#f4b728;--gold-2:#ffd36b;--red:#ff5d52;--green:#3ddc97;--blue:#7cb7ff;
-  --sans:"Space Grotesk",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;
+  --display:"Bebas Neue",Impact,"Arial Narrow",sans-serif;--sans:"Source Sans 3",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;
   --ease:cubic-bezier(.2,.7,.2,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
 ::selection{background:var(--gold);color:#000}
 :focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
@@ -27,18 +27,18 @@ a{color:inherit;text-decoration:none}
 .wrap{max-width:1180px;margin:0 auto;padding:0 24px;position:relative}
 nav{position:sticky;top:0;z-index:20;background:rgba(7,8,10,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:2px solid var(--line)}
 .nav-in{display:flex;align-items:center;justify-content:space-between;height:64px;gap:12px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:600}
+.brand{display:flex;align-items:center;gap:10px;font:400 24px/1 var(--display);letter-spacing:.04em}
 .brand svg{width:24px;height:24px}
 .brand small{font:500 11px/1 var(--mono);color:var(--gold);border:2px solid rgba(244,183,40,.3);padding:5px 8px;border-radius:999px;letter-spacing:.06em;text-transform:uppercase}
 .nav-r{display:flex;gap:6px}
-.nav-r a{font-size:14px;color:var(--muted);padding:8px 12px;border-radius:8px;transition:color .2s,background .2s}
+.nav-r a{font-size:15px;font-weight:500;color:var(--muted);padding:8px 12px;border-radius:8px;transition:color .2s,background .2s}
 .nav-r a:hover{color:var(--text);background:rgba(255,255,255,.04)}
 
 header{padding:64px 0 28px}
 .kicker{font:500 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:10px}
 .kicker::before{content:"";width:22px;height:2px;background:var(--gold)}
-h1{font-size:clamp(36px,5vw,60px);line-height:1.02;letter-spacing:-.04em;font-weight:600;margin:16px 0 14px}
-.sub{color:var(--muted);font-size:18px;max-width:40em}
+h1{font:400 clamp(52px,6.4vw,96px)/.9 var(--display);letter-spacing:.006em;margin:20px 0 22px}
+.sub{color:var(--muted);font-size:19px;max-width:38em}
 .sub b{color:var(--text);font-weight:500}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
 .chip{font:500 12px/1 var(--mono);padding:8px 11px;border-radius:999px;border:2px solid var(--line-2);color:var(--muted);display:inline-flex;gap:8px;align-items:center}
@@ -51,13 +51,13 @@ h1{font-size:clamp(36px,5vw,60px);line-height:1.02;letter-spacing:-.04em;font-we
 .wallet .v{font:13px/1.3 var(--mono);color:var(--text);overflow-wrap:anywhere}
 .wallet .v.g{color:var(--gold)}
 
-.card{border:2px solid var(--line);border-radius:18px;background:linear-gradient(180deg,var(--surface),var(--bg-2));margin-bottom:20px;overflow:hidden}
-.card-h{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:22px 24px 0;flex-wrap:wrap}
-.card-h h2{font-size:22px;letter-spacing:-.02em;font-weight:600;display:flex;gap:12px;align-items:baseline}
-.card-h h2 .n{font:500 13px/1 var(--mono);color:var(--gold)}
+.card{border:2px solid var(--line);border-radius:18px;background:linear-gradient(180deg,var(--surface),var(--bg-2));margin-bottom:24px;overflow:hidden}
+.card-h{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:26px 28px 0;flex-wrap:wrap}
+.card-h h2{font:400 38px/1 var(--display);letter-spacing:.015em;display:flex;gap:14px;align-items:baseline}
+.card-h h2 .n{font:400 38px/1 var(--display);color:var(--gold)}
 .card-h .pkg{font:12px/1 var(--mono);color:var(--dim)}
-.card-d{padding:6px 24px 0;color:var(--muted);font-size:15px;max-width:52em}
-.card-b{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:20px;padding:20px 24px 24px}
+.card-d{padding:8px 28px 0;color:var(--muted);font-size:16px;max-width:50em}
+.card-b{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:24px;padding:22px 28px 28px}
 
 label{display:block;font:500 12px/1 var(--mono);color:var(--muted);margin:0 0 7px;letter-spacing:.02em}
 .field{margin-bottom:14px}
@@ -70,7 +70,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:rgba(244,183,4
 .presets button:hover{border-color:var(--line-2);color:var(--text)}
 .presets button.t{color:#ff9b93}
 .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
-.btn{display:inline-flex;align-items:center;gap:8px;font:600 14px/1 var(--sans);padding:12px 16px;border-radius:10px;border:2px solid var(--line-2);color:var(--text);background:transparent;cursor:pointer;min-height:44px;transition:transform .2s var(--ease),border-color .2s,background .2s,opacity .2s}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 15px/1 var(--sans);padding:12px 16px;border-radius:10px;border:2px solid var(--line-2);color:var(--text);background:transparent;cursor:pointer;min-height:44px;transition:transform .2s var(--ease),border-color .2s,background .2s,opacity .2s}
 .btn:hover{border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
 .btn:active{transform:translateY(0)}
 .btn.gold{background:var(--gold);border-color:var(--gold);color:#120d00}
