@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>zcash-toolkit playground</title>
+<meta name="description" content="Run the real zcash-toolkit source in your browser: shielded send, t-address refusal, payment proofs, x402 pay-per-call, MCP spending policy and privacy audit.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07080a;--bg-2:#0c0e12;--surface:#101318;--surface-2:#151920;
+  --line:rgba(255,255,255,.07);--line-2:rgba(255,255,255,.13);
+  --text:#eceef1;--muted:#8b929c;--dim:#5a616b;
+  --gold:#f4b728;--gold-2:#ffd36b;--red:#ff5d52;--green:#3ddc97;--blue:#7cb7ff;
+  --sans:"Space Grotesk",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--gold);color:#000}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
+*{scrollbar-width:thin;scrollbar-color:#2a2f37 transparent}
+.bg-grid{position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 80% 45% at 50% 0%,#000 10%,transparent 70%);opacity:.5}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px;position:relative}
+nav{position:sticky;top:0;z-index:20;background:rgba(7,8,10,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:2px solid var(--line)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:64px;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600}
+.brand svg{width:24px;height:24px}
+.brand small{font:500 11px/1 var(--mono);color:var(--gold);border:2px solid rgba(244,183,40,.3);padding:5px 8px;border-radius:999px;letter-spacing:.06em;text-transform:uppercase}
+.nav-r{display:flex;gap:6px}
+.nav-r a{font-size:14px;color:var(--muted);padding:8px 12px;border-radius:8px;transition:color .2s,background .2s}
+.nav-r a:hover{color:var(--text);background:rgba(255,255,255,.04)}
+
+header{padding:64px 0 28px}
+.kicker{font:500 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:10px}
+.kicker::before{content:"";width:22px;height:2px;background:var(--gold)}
+h1{font-size:clamp(36px,5vw,60px);line-height:1.02;letter-spacing:-.04em;font-weight:600;margin:16px 0 14px}
+.sub{color:var(--muted);font-size:18px;max-width:40em}
+.sub b{color:var(--text);font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.chip{font:500 12px/1 var(--mono);padding:8px 11px;border-radius:999px;border:2px solid var(--line-2);color:var(--muted);display:inline-flex;gap:8px;align-items:center}
+.chip i{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.chip.g i{background:var(--gold)}.chip.r i{background:var(--red)}
+
+.wallet{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;justify-content:space-between;margin:28px 0 24px;padding:16px 20px;border:2px solid var(--line);border-radius:14px;background:var(--bg-2)}
+.wallet .f{display:flex;flex-direction:column;gap:4px;min-width:0}
+.wallet .k{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.wallet .v{font:13px/1.3 var(--mono);color:var(--text);overflow-wrap:anywhere}
+.wallet .v.g{color:var(--gold)}
+
+.card{border:2px solid var(--line);border-radius:18px;background:linear-gradient(180deg,var(--surface),var(--bg-2));margin-bottom:20px;overflow:hidden}
+.card-h{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:22px 24px 0;flex-wrap:wrap}
+.card-h h2{font-size:22px;letter-spacing:-.02em;font-weight:600;display:flex;gap:12px;align-items:baseline}
+.card-h h2 .n{font:500 13px/1 var(--mono);color:var(--gold)}
+.card-h .pkg{font:12px/1 var(--mono);color:var(--dim)}
+.card-d{padding:6px 24px 0;color:var(--muted);font-size:15px;max-width:52em}
+.card-b{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:20px;padding:20px 24px 24px}
+
+label{display:block;font:500 12px/1 var(--mono);color:var(--muted);margin:0 0 7px;letter-spacing:.02em}
+.field{margin-bottom:14px}
+input,select,textarea{width:100%;font:13.5px/1.4 var(--mono);color:var(--text);background:rgba(0,0,0,.35);border:2px solid var(--line-2);border-radius:10px;padding:11px 12px;transition:border-color .2s;min-height:44px}
+textarea{min-height:92px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:rgba(244,183,40,.6)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.presets button{font:12px/1 var(--mono);padding:8px 10px;border-radius:8px;border:2px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;transition:border-color .2s,color .2s}
+.presets button:hover{border-color:var(--line-2);color:var(--text)}
+.presets button.t{color:#ff9b93}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 14px/1 var(--sans);padding:12px 16px;border-radius:10px;border:2px solid var(--line-2);color:var(--text);background:transparent;cursor:pointer;min-height:44px;transition:transform .2s var(--ease),border-color .2s,background .2s,opacity .2s}
+.btn:hover{border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#120d00}
+.btn.gold:hover{background:var(--gold-2);border-color:var(--gold-2)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn .sp{width:14px;height:14px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:spin .7s linear infinite;display:none}
+.btn.busy .sp{display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.endpoint{font:13px/1.5 var(--mono);padding:12px 14px;border-radius:10px;border:2px solid var(--line);background:rgba(0,0,0,.3);margin-bottom:14px}
+.endpoint b{color:var(--gold);font-weight:500}
+.endpoint span{color:var(--muted)}
+.check{display:flex;align-items:center;gap:10px;font:13px/1.3 var(--mono);color:var(--muted);margin:-2px 0 14px;cursor:pointer}
+.check input{width:18px;height:18px;min-height:0;accent-color:var(--gold)}
+.meter{margin:4px 0 16px}
+.meter .bar{height:8px;border-radius:8px;background:rgba(255,255,255,.06);overflow:hidden}
+.meter .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold-2));border-radius:8px;transition:width .6s var(--ease)}
+.meter .t{display:flex;justify-content:space-between;font:12px/1 var(--mono);color:var(--muted);margin-top:8px}
+.sum{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 14px}
+.sum span{font:12px/1 var(--mono);padding:8px 10px;border-radius:8px;border:2px solid var(--line)}
+.sum .c{color:var(--red)}.sum .w{color:var(--gold)}.sum .x{color:var(--text)}
+
+.con{border:2px solid var(--line);border-radius:12px;background:#050608;display:flex;flex-direction:column;min-height:300px;max-height:420px;min-width:0}
+.con-h{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:2px solid var(--line);font:12px/1 var(--mono);color:var(--dim)}
+.con-h button{font:12px/1 var(--mono);color:var(--dim);background:none;border:0;cursor:pointer;padding:6px 8px;border-radius:6px}
+.con-h button:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.con-b{padding:12px 14px;overflow:auto;font:12.5px/1.65 var(--mono);flex:1}
+.con-b .e{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;animation:in .35s var(--ease)}
+@keyframes in{from{opacity:0;transform:translateY(4px)}}
+.con-b .ts{color:#3d434c}
+.con-b .m{white-space:pre-wrap;overflow-wrap:anywhere;color:#c9ced6}
+.con-b .ok .m{color:var(--green)}.con-b .err .m{color:var(--red)}.con-b .gold .m{color:var(--gold)}.con-b .dim .m{color:var(--muted)}.con-b .blue .m{color:var(--blue)}
+.con-b .empty{color:var(--dim)}
+
+.notes{margin-top:14px;border-top:2px solid var(--line);padding-top:14px}
+.notes .k{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
+.note{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:10px;align-items:center;font:12.5px/1.4 var(--mono);padding:7px 0;border-bottom:1px solid var(--line)}
+.note:last-child{border-bottom:0}
+.pool{font-size:11px;padding:3px 7px;border-radius:6px;border:2px solid rgba(244,183,40,.35);color:var(--gold)}
+.pool.transparent{border-color:rgba(255,93,82,.45);color:var(--red)}
+.note .memo{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+footer{border-top:2px solid var(--line);padding:26px 0 40px;margin-top:40px;color:var(--dim);font:12.5px/1.7 var(--mono)}
+footer code{color:var(--muted)}
+footer a{color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+
+@media (max-width:900px){.card-b{grid-template-columns:1fr}.con{min-height:220px}}
+@media (max-width:640px){.wrap{padding:0 16px}.card-h,.card-d{padding-left:16px;padding-right:16px}.card-b{padding:16px}.row{grid-template-columns:1fr}.nav-r a.hide{display:none}header{padding-top:40px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+</style>
+</head>
+<body>
+<div class="bg-grid" aria-hidden="true"></div>
+<nav>
+  <div class="wrap nav-in">
+    <a class="brand" href="../">
+      <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 2.5 27 7v8.2c0 6.6-4.6 12-11 14.3C9.6 27.2 5 21.8 5 15.2V7l11-4.5Z" stroke="#f4b728" stroke-width="2.2" stroke-linejoin="round"/><path d="M11.5 11.5h9l-9 9h9" stroke="#f4b728" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      zcash-toolkit <small>playground</small>
+    </a>
+    <div class="nav-r">
+      <a class="hide" href="../">Overview</a>
+      <a href="https://github.com/sammy-XXIV/zcash-toolkit" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+  <header>
+    <div class="kicker">Playground</div>
+    <h1>Try the toolkit in your browser.</h1>
+    <p class="sub">Every button here runs the <b>real zcash-toolkit source</b> (<code>packages/*/src</code>, bundled with esbuild). The wallet uses the <b>mock adapter</b>: same API as the real one, notes kept in memory, <b>no real ZEC</b>. Nothing leaves this tab.</p>
+    <div class="chips">
+      <span class="chip"><i></i>real toolkit code</span>
+      <span class="chip g"><i></i>mock adapter</span>
+      <span class="chip r"><i></i>no real ZEC, no backend</span>
+    </div>
+  </header>
+
+  <div class="wallet" aria-live="polite">
+    <div class="f"><span class="k">wallet address · newAddress()</span><span class="v g" id="w-addr">…</span></div>
+    <div class="f"><span class="k">notes</span><span class="v" id="w-notes">0</span></div>
+    <div class="f"><span class="k">adapter</span><span class="v">createMockAdapter()</span></div>
+    <button class="btn" id="w-reset">Reset wallet</button>
+  </div>
+
+  <!-- 01 send -->
+  <section class="card" id="c-send">
+    <div class="card-h"><h2><span class="n">01</span>Shielded send &amp; payment proof</h2><span class="pkg">@zcash-toolkit/core · @zcash-toolkit/gate</span></div>
+    <p class="card-d">Send to a shielded address, then prove that one payment to a merchant with a viewing-key proof. Try a <code>t1…</code> address to see the refusal.</p>
+    <div class="card-b">
+      <div>
+        <div class="field">
+          <label for="s-to">to</label>
+          <input id="s-to" spellcheck="false" autocomplete="off">
+          <div class="presets">
+            <button type="button" data-to="u">u1… shielded</button>
+            <button type="button" class="t" data-to="t">t1… transparent</button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="s-amt">amount (ZEC)</label><input id="s-amt" value="0.05" inputmode="decimal"></div>
+          <div class="field"><label for="s-memo">memo</label><input id="s-memo" value="invoice #2041"></div>
+        </div>
+        <div class="btns">
+          <button class="btn gold" id="s-send"><span class="sp"></span>wallet.send()</button>
+          <button class="btn" id="s-proof" disabled><span class="sp"></span>paymentProof()</button>
+        </div>
+        <div class="field" style="margin-top:18px"><label for="s-exp">merchant expects (ZEC)</label><input id="s-exp" value="0.05" inputmode="decimal"></div>
+        <div class="btns"><button class="btn" id="s-verify" disabled>verifyPaymentProof()</button></div>
+      </div>
+      <div class="con"><div class="con-h"><span>console</span><button data-clear="send">clear</button></div><div class="con-b" id="con-send"><div class="empty">Pick an address and press wallet.send().</div></div></div>
+    </div>
+  </section>
+
+  <!-- 02 x402 -->
+  <section class="card" id="c-x402">
+    <div class="card-h"><h2><span class="n">02</span>x402 pay-per-call</h2><span class="pkg">@zcash-toolkit/x402</span></div>
+    <p class="card-d">A paid API protected by <code>requirePayment()</code> runs inside this page. Call it with plain <code>fetch()</code> to get the 402, or with <code>fetchWithPayment()</code> to pay shielded and retry with proof.</p>
+    <div class="card-b">
+      <div>
+        <div class="endpoint"><b>GET</b> https://paid-api.demo/v1/forecast<br><span>price</span> 0.001 ZEC <span>· recipient</span> <span id="x-rcpt"></span></div>
+        <div class="btns">
+          <button class="btn" id="x-plain"><span class="sp"></span>fetch()</button>
+          <button class="btn gold" id="x-paid"><span class="sp"></span>fetchWithPayment()</button>
+        </div>
+      </div>
+      <div class="con"><div class="con-h"><span>network</span><button data-clear="x402">clear</button></div><div class="con-b" id="con-x402"><div class="empty">Requests and responses appear here.</div></div></div>
+    </div>
+  </section>
+
+  <!-- 03 agent -->
+  <section class="card" id="c-agent">
+    <div class="card-h"><h2><span class="n">03</span>Agent tools &amp; spending policy</h2><span class="pkg">@zcash-toolkit/agent</span></div>
+    <p class="card-d">The same tool handlers the MCP server exposes, behind <code>SpendingPolicyEngine</code>. Call <code>send_zec</code> like an agent would and watch the policy step in.</p>
+    <div class="card-b">
+      <div>
+        <div class="row">
+          <div class="field"><label for="p-max">maxPerTx</label><input id="p-max" value="0.1" inputmode="decimal"></div>
+          <div class="field"><label for="p-day">dailyLimit</label><input id="p-day" value="0.25" inputmode="decimal"></div>
+        </div>
+        <label class="check"><input type="checkbox" id="p-allow"> allow only the merchant address</label>
+        <div class="meter"><div class="bar"><i id="p-bar"></i></div><div class="t"><span>dailySpent <b id="p-spent">0</b></span><span id="p-lim">limit 0.25</span></div></div>
+        <div class="field"><label for="t-tool">tool</label>
+          <select id="t-tool"><option>send_zec</option><option>get_address</option><option>get_history</option><option>payment_proof</option><option>get_balance</option></select></div>
+        <div class="field"><label for="t-args">arguments (JSON)</label><textarea id="t-args" spellcheck="false"></textarea></div>
+        <div class="btns"><button class="btn gold" id="t-call"><span class="sp"></span>call tool</button><button class="btn" id="p-apply">apply policy</button></div>
+      </div>
+      <div class="con"><div class="con-h"><span>tool results</span><button data-clear="agent">clear</button></div><div class="con-b" id="con-agent"><div class="empty">Try send_zec with 0.05, then 0.5, then a t1… address.</div></div></div>
+    </div>
+  </section>
+
+  <!-- 04 audit -->
+  <section class="card" id="c-audit">
+    <div class="card-h"><h2><span class="n">04</span>Privacy audit</h2><span class="pkg">@zcash-toolkit/audit</span></div>
+    <p class="card-d">Runs <code>runAudit()</code> over the wallet history. The toolkit itself never creates a transparent note, so use the buttons below to simulate incoming notes the audit should catch.</p>
+    <div class="card-b">
+      <div>
+        <div class="btns">
+          <button class="btn" id="a-t">simulate transparent deposit</button>
+          <button class="btn" id="a-d">simulate dust note</button>
+        </div>
+        <div class="btns" style="margin-top:12px"><button class="btn gold" id="a-run"><span class="sp"></span>runAudit()</button></div>
+        <div class="sum" id="a-sum" hidden></div>
+        <div class="notes"><div class="k">wallet.history()</div><div id="notes"><div class="note" style="color:var(--dim)">no notes yet</div></div></div>
+      </div>
+      <div class="con"><div class="con-h"><span>audit report</span><button data-clear="audit">clear</button></div><div class="con-b" id="con-audit"><div class="empty">Send something first, then run the audit.</div></div></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    Bundle: <code>docs/demo/src/entry.ts</code> re-exports <code>packages/*/src</code>. Shims: <code>events</code> and a base64 <code>Buffer</code>, nothing else.
+    Real transactions need Linux + Node 22.23.4 with <code>@zcashlabs/zcash.js</code>. <a href="https://github.com/sammy-XXIV/zcash-toolkit" target="_blank" rel="noopener">Source on GitHub</a>
+  </div>
+</footer>
+
+<script type="module">
+import * as ZT from "./toolkit.js";
+
+const $ = s => document.querySelector(s);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const MERCHANT = "u1qx7kp0merchant3vz9w9a3m8k";
+const TADDR = "t1Kz9fQxV3mRbN2pLw8sYdE4aP2";
+const PRICE = "0.001";
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const short = s => s.length > 22 ? s.slice(0, 12) + "…" + s.slice(-6) : s;
+
+/* console */
+const t0 = performance.now();
+const log = (id, msg, cls = "") => {
+  const box = $("#con-" + id);
+  box.querySelector(".empty")?.remove();
+  const e = document.createElement("div");
+  e.className = "e " + cls;
+  e.innerHTML = `<span class="ts">${((performance.now() - t0) / 1000).toFixed(2).padStart(6, "0")}</span><span class="m">${esc(msg)}</span>`;
+  box.appendChild(e);
+  box.scrollTop = box.scrollHeight;
+};
+document.querySelectorAll("[data-clear]").forEach(b => b.onclick = () => { $("#con-" + b.dataset.clear).innerHTML = ""; });
+const busy = async (btn, fn) => { btn.classList.add("busy"); btn.disabled = true; try { await fn(); } finally { btn.classList.remove("busy"); btn.disabled = false; } };
+
+/* wallet: real ZcashWallet over the mock adapter; extra[] holds simulated incoming notes for the audit */
+let wallet, policy, tools, extra, hooks = {}, lastSend = null, lastProof = null;
+const makeWallet = async () => {
+  extra = [];
+  const base = ZT.createMockAdapter();
+  const adapter = {
+    ...base,
+    async send(p) { await sleep(450); const tx = await base.send(p); hooks.onSend?.(p, tx); return tx; },
+    async paymentProof(tx) { await sleep(200); return base.paymentProof(tx); },
+    async history(limit) { return [...extra, ...(await base.history(limit))].sort((a, b) => a.timestamp - b.timestamp); },
+  };
+  wallet = ZT.ZcashWallet.fromAdapter(adapter);
+  $("#w-addr").textContent = await wallet.newAddress();
+  applyPolicy();
+  lastSend = lastProof = null;
+  $("#s-proof").disabled = $("#s-verify").disabled = true;
+  await renderNotes();
+};
+
+const renderNotes = async () => {
+  const notes = await wallet.history(50);
+  $("#w-notes").textContent = notes.length;
+  $("#notes").innerHTML = notes.length ? notes.slice().reverse().map(n =>
+    `<div class="note"><span class="pool ${n.pool}">${n.pool}</span><span>${esc(n.amount)}</span><span class="memo">${esc(n.memo || "no memo")} · ${esc(short(n.txid))}</span></div>`).join("")
+    : '<div class="note" style="color:var(--dim)">no notes yet</div>';
+};
+
+/* 01 send */
+$("#s-to").value = MERCHANT;
+document.querySelectorAll("[data-to]").forEach(b => b.onclick = () => { $("#s-to").value = b.dataset.to === "t" ? TADDR : MERCHANT; });
+$("#s-send").onclick = e => busy(e.currentTarget, async () => {
+  const p = { to: $("#s-to").value.trim(), amount: $("#s-amt").value.trim(), memo: $("#s-memo").value };
+  log("send", `wallet.send({ to: "${short(p.to)}", amount: "${p.amount}", memo: "${p.memo}" })`, "dim");
+  try {
+    const txid = await wallet.send(p);
+    lastSend = { ...p, txid }; lastProof = null;
+    log("send", `✓ txid ${txid}  (orchard, shielded)`, "ok");
+    $("#s-proof").disabled = false; $("#s-verify").disabled = true;
+    $("#s-exp").value = p.amount;
+  } catch (err) {
+    log("send", `✗ ${err.message}`, "err");
+  }
+  await renderNotes();
+});
+$("#s-proof").onclick = e => busy(e.currentTarget, async () => {
+  lastProof = await wallet.paymentProof(lastSend.txid);
+  log("send", `paymentProof("${short(lastSend.txid)}")`, "dim");
+  log("send", JSON.stringify({ txid: lastProof.txid, amount: lastProof.amount, memo: lastProof.memo, viewingKeyProof: lastProof.viewingKeyProof }, null, 2), "gold");
+  log("send", "→ share this with the merchant. It reveals this payment only: no seed, no balance, no other notes.", "dim");
+  $("#s-verify").disabled = false;
+});
+$("#s-verify").onclick = () => {
+  const exp = $("#s-exp").value.trim();
+  const r = ZT.verifyPaymentProof({ txid: lastProof.txid, recipient: lastSend.to, amount: lastProof.amount, viewingKeyProof: lastProof.viewingKeyProof }, lastSend.to, exp);
+  log("send", `verifyPaymentProof(proof, "${short(lastSend.to)}", "${exp}")`, "dim");
+  log("send", r.valid ? "✓ { valid: true }" : `✗ { valid: false, reason: "${r.reason}" }`, r.valid ? "ok" : "err");
+};
+
+/* 02 x402: in-page paid API guarded by the real requirePayment() middleware */
+$("#x-rcpt").textContent = short(MERCHANT);
+const API = "https://paid-api.demo/v1/forecast";
+const realFetch = window.fetch.bind(window);
+window.fetch = async (input, init = {}) => {
+  const url = typeof input === "string" ? input : input.url;
+  if (!url.startsWith("https://paid-api.demo/")) return realFetch(input, init);
+  const headers = {};
+  for (const [k, v] of Object.entries(init.headers || {})) headers[k.toLowerCase()] = v;
+  log("x402", `→ GET /v1/forecast${headers["x-payment"] ? "\n  X-Payment: " + headers["x-payment"].slice(0, 44) + "…" : ""}`, "blue");
+  await sleep(320);
+  const req = { headers };
+  const out = { status: 200, body: null, headers: {} };
+  const res = { setHeader(k, v) { out.headers[k] = v; }, status(c) { out.status = c; return res; }, json(b) { out.body = b; return res; } };
+  let paid = false;
+  ZT.requirePayment({ recipient: MERCHANT, amount: PRICE, memo: "forecast api", network: "testnet" })(req, res, () => { paid = true; });
+  if (paid) out.body = { city: "Lagos", forecast: "31°C, scattered storms", paidBy: "shielded", txid: req.paymentProof.txid };
+  if (out.status === 402) {
+    const hdr = out.headers["X-Payment-Required"];
+    log("x402", `← 402 Payment Required\n  X-Payment-Required: ${hdr.slice(0, 44)}…\n  decoded: ${JSON.stringify(ZT.parsePaymentHeader(hdr))}`, "gold");
+  } else {
+    log("x402", `← 200 OK\n  ${JSON.stringify(out.body)}`, "ok");
+  }
+  return new Response(JSON.stringify(out.body), { status: out.status, headers: { "content-type": "application/json", ...out.headers } });
+};
+$("#x-plain").onclick = e => busy(e.currentTarget, async () => {
+  log("x402", "fetch(url)", "dim");
+  const r = await fetch(API);
+  log("x402", `status ${r.status}. A plain client stops here.`, "dim");
+});
+$("#x-paid").onclick = e => busy(e.currentTarget, async () => {
+  log("x402", "fetchWithPayment(url, wallet)", "dim");
+  hooks.onSend = (p, tx) => log("x402", `  wallet.send → ${short(p.to)}  ${p.amount} ZEC  orchard\n  txid ${tx}`, "gold");
+  try {
+    const r = await ZT.fetchWithPayment(API, wallet);
+    log("x402", `done: status ${r.status}`, r.ok ? "ok" : "err");
+  } finally { hooks.onSend = null; }
+  await renderNotes(); updateMeter();
+});
+
+/* 03 agent */
+function applyPolicy() {
+  const pol = { maxPerTx: $("#p-max").value.trim(), dailyLimit: $("#p-day").value.trim() };
+  if ($("#p-allow").checked) pol.allowedRecipients = [MERCHANT];
+  policy = new ZT.SpendingPolicyEngine(pol);
+  tools = ZT.makeWalletTools(wallet, policy);
+  $("#p-lim").textContent = "limit " + pol.dailyLimit;
+  updateMeter();
+  return pol;
+}
+function updateMeter() {
+  if (!policy) return;
+  const spent = parseFloat(policy.dailySpent), lim = parseFloat($("#p-day").value) || 1;
+  $("#p-spent").textContent = (+spent.toFixed(8)).toString();
+  $("#p-bar").style.width = Math.min(100, spent / lim * 100) + "%";
+}
+const toolArgs = {
+  send_zec: () => ({ to: MERCHANT, amount: "0.05", memo: "agent task #12" }),
+  get_address: () => ({ pool: "orchard" }),
+  get_history: () => ({ limit: 5 }),
+  payment_proof: () => ({ txid: lastSend?.txid ?? "paste a txid" }),
+  get_balance: () => ({}),
+};
+const setArgs = () => { $("#t-args").value = JSON.stringify(toolArgs[$("#t-tool").value](), null, 2); };
+$("#t-tool").onchange = setArgs; setArgs();
+$("#p-apply").onclick = () => { const p = applyPolicy(); log("agent", `new SpendingPolicyEngine(${JSON.stringify(p)})  (dailySpent reset)`, "dim"); };
+$("#t-call").onclick = e => busy(e.currentTarget, async () => {
+  const name = $("#t-tool").value;
+  let args;
+  try { args = JSON.parse($("#t-args").value || "{}"); } catch { log("agent", "✗ arguments are not valid JSON", "err"); return; }
+  log("agent", `tools.${name}(${JSON.stringify(args)})`, "dim");
+  hooks.onSend = (p, tx) => { lastSend = { ...p, txid: tx }; };
+  const r = await tools[name](args);
+  hooks.onSend = null;
+  log("agent", (r.isError ? "✗ " : "✓ ") + r.content.map(c => c.text).join("\n"), r.isError ? "err" : "ok");
+  updateMeter(); await renderNotes();
+});
+
+/* 04 audit */
+const fakeTx = p => p + Math.random().toString(16).slice(2, 12);
+$("#a-t").onclick = async () => {
+  extra.push({ txid: fakeTx("legacy"), amount: "0.2", memo: "", pool: "transparent", confirmed: true, timestamp: Date.now() });
+  log("audit", "+ simulated incoming note: 0.2 ZEC, transparent pool", "dim"); await renderNotes();
+};
+$("#a-d").onclick = async () => {
+  extra.push({ txid: fakeTx("dust"), amount: "0.000001", memo: "hi", pool: "orchard", confirmed: true, timestamp: Date.now() });
+  log("audit", "+ simulated incoming note: 0.000001 ZEC, orchard", "dim"); await renderNotes();
+};
+$("#a-run").onclick = e => busy(e.currentTarget, async () => {
+  const r = await ZT.runAudit(wallet);
+  const code = r.summary.critical > 0 ? 2 : 0;
+  log("audit", `runAudit(wallet) · ${r.notesScanned} notes scanned`, "dim");
+  if (!r.findings.length) log("audit", "✓ no findings", "ok");
+  for (const f of r.findings) log("audit", `[${f.severity}] ${f.rule}\n  ${f.message}`, f.severity === "critical" ? "err" : "gold");
+  log("audit", `zcash-audit would exit ${code}`, code ? "err" : "ok");
+  const s = $("#a-sum"); s.hidden = false;
+  s.innerHTML = `<span class="c">critical ${r.summary.critical}</span><span class="w">warn ${r.summary.warn}</span><span class="x">exit ${code}</span>`;
+});
+
+$("#w-reset").onclick = async () => { await makeWallet(); ["send", "x402", "agent", "audit"].forEach(id => log(id, "wallet reset", "dim")); $("#a-sum").hidden = true; };
+await makeWallet();
+</script>
+</body>
+</html>

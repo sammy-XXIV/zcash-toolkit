@@ -4,13 +4,15 @@
   "scripts": {
     "build": "pnpm -r build",
     "test": "pnpm -r test",
-    "dev": "pnpm -r --parallel dev"
+    "dev": "pnpm -r --parallel dev",
+    "build:demo": "esbuild docs/demo/src/entry.ts --bundle --format=esm --platform=browser --target=es2022 --outfile=docs/demo/toolkit.js --alias:events=./docs/demo/src/events-shim.ts --alias:@zcash-toolkit/core=./packages/core/src/index.ts --inject:./docs/demo/src/buffer-shim.ts --external:@zcashlabs/zcash.js --define:process.platform=\\\"browser\\\""
   },
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
+    "esbuild": "0.28.2",
     "tsx": "^4.0.0"
   }
 }

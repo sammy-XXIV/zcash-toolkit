@@ -1,0 +1,883 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>zcash-toolkit — private money for machines</title>
+<meta name="description" content="TypeScript SDK giving Node.js apps and AI agents shielded-only Zcash payments: wallet, x402 pay-per-call, MCP server, privacy audit, React payment gate.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07080a; --bg-2:#0c0e12; --surface:#101318; --surface-2:#151920;
+  --line:rgba(255,255,255,.07); --line-2:rgba(255,255,255,.13);
+  --text:#eceef1; --muted:#8b929c; --dim:#5a616b;
+  --gold:#f4b728; --gold-2:#ffd36b; --gold-a:rgba(244,183,40,.14);
+  --red:#ff5d52; --green:#3ddc97;
+  --sans:"Space Grotesk",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+  --ease:cubic-bezier(.2,.7,.2,1); --ease-io:cubic-bezier(.65,0,.35,1);
+  --wrap:1180px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+code,.mono{font-family:var(--mono)}
+::selection{background:var(--gold);color:#000}
+*{scrollbar-width:thin;scrollbar-color:#2a2f37 transparent}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#2a2f37;border-radius:8px}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:6px}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
+
+/* backdrop */
+.bg-grid{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:64px 64px;mask-image:radial-gradient(ellipse 80% 55% at 60% 0%,#000 10%,transparent 70%);opacity:.55}
+.bg-glow{position:fixed;width:900px;height:900px;left:50%;top:-520px;transform:translateX(-10%);pointer-events:none;z-index:0;
+  background:radial-gradient(circle,rgba(244,183,40,.13),transparent 62%);filter:blur(10px)}
+main,nav,footer{position:relative;z-index:1}
+
+/* nav */
+nav{position:sticky;top:0;z-index:50;transition:background .3s var(--ease),border-color .3s var(--ease);border-bottom:2px solid transparent}
+nav.scrolled{background:rgba(7,8,10,.72);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);border-bottom-color:var(--line)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:68px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:-.01em}
+.brand svg{width:26px;height:26px}
+.nav-links{display:flex;gap:6px;align-items:center}
+.nav-links a{font-size:14px;color:var(--muted);padding:8px 12px;border-radius:8px;transition:color .2s,background .2s}
+.nav-links a:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 14px/1 var(--sans);padding:12px 18px;border-radius:10px;border:2px solid var(--line-2);color:var(--text);cursor:pointer;background:transparent;transition:transform .25s var(--ease),border-color .25s,background .25s,color .25s;min-height:44px}
+.btn:hover{border-color:rgba(255,255,255,.28);transform:translateY(-1px)}
+.btn svg{width:16px;height:16px}
+.btn-gold{background:var(--gold);border-color:var(--gold);color:#120d00}
+.btn-gold:hover{background:var(--gold-2);border-color:var(--gold-2)}
+.nav-links .btn{padding:9px 14px;min-height:38px;color:var(--text)}
+
+/* hero */
+.hero{padding:72px 0 40px}
+.hero-grid{display:grid;grid-template-columns:1.02fr 1fr;gap:40px;align-items:center}
+.hero-grid>*,.x402>*,.two>*,.rvm>*,.bento>*,.tracks>*{min-width:0}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--gold);padding:8px 12px;border:2px solid rgba(244,183,40,.25);border-radius:999px;background:rgba(244,183,40,.05)}
+.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 0 rgba(244,183,40,.6);animation:ping 2.4s var(--ease) infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(244,183,40,.55)}70%,100%{box-shadow:0 0 0 9px rgba(244,183,40,0)}}
+h1{font-size:clamp(44px,6.6vw,84px);line-height:.98;letter-spacing:-.045em;font-weight:600;margin:26px 0 22px}
+h1 .g{background:linear-gradient(100deg,var(--gold) 10%,var(--gold-2) 50%,var(--gold) 90%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sheen 6s linear infinite}
+@keyframes sheen{to{background-position:-200% 0}}
+.lede{font-size:clamp(17px,1.6vw,19px);color:var(--muted);max-width:33em}
+.lede b{color:var(--text);font-weight:500}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.clone{display:flex;align-items:center;gap:12px;font:13px/1 var(--mono);color:var(--muted);padding:0 6px 0 16px;border:2px solid var(--line-2);border-radius:10px;background:rgba(255,255,255,.02);min-height:44px;max-width:100%}
+.clone span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.clone .p{color:var(--gold)}
+.copy{display:grid;place-items:center;width:34px;height:34px;border-radius:7px;border:0;background:transparent;color:var(--muted);cursor:pointer;transition:background .2s,color .2s;flex:none}
+.copy:hover{background:rgba(255,255,255,.07);color:var(--text)}
+.copy svg{width:15px;height:15px}
+.copy.ok{color:var(--green)}
+
+.stage{position:relative;aspect-ratio:1/0.92;width:100%}
+#lens{position:absolute;inset:0;width:100%;height:100%;display:block}
+.stage-cap{position:absolute;left:0;right:0;bottom:-6px;display:flex;justify-content:space-between;gap:16px;font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.stage-cap b{color:var(--muted);font-weight:500}
+.stage-cap span:last-child{text-align:right}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);margin-top:64px;border-top:2px solid var(--line);border-bottom:2px solid var(--line)}
+.stat{padding:26px 24px;border-right:2px solid var(--line)}
+.stat:last-child{border-right:0}
+.stat .n{font-size:34px;font-weight:600;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.stat .n em{font-style:normal;color:var(--gold)}
+.stat .l{font:12px/1.4 var(--mono);color:var(--muted);margin-top:4px;letter-spacing:.02em}
+
+/* sections */
+section{padding:120px 0 0}
+.kicker{font:500 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:10px}
+.kicker::before{content:"";width:22px;height:2px;background:var(--gold)}
+h2{font-size:clamp(32px,4.2vw,52px);line-height:1.04;letter-spacing:-.035em;font-weight:600;margin:18px 0 16px;max-width:17em}
+.sub{color:var(--muted);font-size:18px;max-width:36em}
+.sec-head{margin-bottom:52px}
+
+.panel{background:linear-gradient(180deg,var(--surface),var(--bg-2));border:2px solid var(--line);border-radius:18px;position:relative;overflow:hidden}
+.panel-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:2px solid var(--line);font:12px/1 var(--mono);color:var(--muted)}
+.lights{display:flex;gap:6px}.lights i{width:10px;height:10px;border-radius:50%;background:#262a31}
+
+/* x402 sequence */
+.x402{display:grid;grid-template-columns:1.25fr 1fr;gap:20px}
+.seq{padding:26px 0 30px;position:relative;min-height:440px}
+.actors{position:relative;height:62px;z-index:2}
+.actor{position:absolute;top:0;left:18%;transform:translateX(-50%);text-align:center}
+.actor:last-child{left:82%}
+.actor .chip{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;border:2px solid var(--line-2);background:var(--surface-2);font-weight:600;font-size:14px;white-space:nowrap}
+.actor .chip svg{width:16px;height:16px;color:var(--gold)}
+.actor small{display:block;font:11px/1 var(--mono);color:var(--dim);margin-top:8px;white-space:nowrap}
+.lifeline{position:absolute;top:96px;bottom:22px;width:2px;background:repeating-linear-gradient(to bottom,var(--line-2) 0 6px,transparent 6px 12px)}
+.lifeline.a{left:18%}.lifeline.b{right:18%}
+.msgs{list-style:none;position:relative;margin-top:34px;z-index:1}
+.msg{position:relative;height:64px}
+.msg .track{position:absolute;left:18%;right:18%;top:34px;height:2px}
+.msg .line{position:absolute;inset:0;background:var(--text);opacity:.85;transform:scaleX(0);transform-origin:left;transition:transform .75s var(--ease-io)}
+.msg.l .line{transform-origin:right}
+.msg .head{position:absolute;top:-5px;width:12px;height:12px;border-top:2px solid var(--text);border-right:2px solid var(--text);opacity:0;transition:opacity .2s .6s}
+.msg.r .head{right:1px;transform:rotate(45deg)}
+.msg.l .head{left:1px;transform:rotate(-135deg)}
+.msg .pkt{position:absolute;inset:-5px 0;pointer-events:none}
+.msg .pkt i{position:absolute;top:0;width:12px;height:12px;border-radius:50%;background:var(--gold);box-shadow:0 0 18px 4px rgba(244,183,40,.55);opacity:0}
+.msg.r .pkt i{left:-6px}.msg.l .pkt i{right:-6px}
+.msg .lbl{position:absolute;left:0;right:0;top:4px;text-align:center;font:12.5px/1.3 var(--mono);color:var(--text);opacity:0;transform:translateY(6px);transition:opacity .45s var(--ease) .25s,transform .45s var(--ease) .25s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 20%}
+.msg .lbl em{font-style:normal;color:var(--muted)}
+.msg.on .line{transform:scaleX(1)}
+.msg.on .head{opacity:1}
+.msg.on .lbl{opacity:1;transform:none}
+.msg.on.r .pkt i{animation:pr .75s var(--ease-io) forwards}
+.msg.on.l .pkt i{animation:pl .75s var(--ease-io) forwards}
+@keyframes pr{0%{opacity:1;transform:translateX(0)}88%{opacity:1}100%{opacity:0;transform:translateX(var(--w))}}
+@keyframes pl{0%{opacity:1;transform:translateX(0)}88%{opacity:1}100%{opacity:0;transform:translateX(calc(var(--w) * -1))}}
+.msg.err .line{background:var(--gold)}.msg.err .head{border-color:var(--gold)}.msg.err .lbl b{color:var(--gold)}
+.msg.ok .line{background:var(--green)}.msg.ok .head{border-color:var(--green)}.msg.ok .lbl b{color:var(--green)}
+.msg.self{height:78px}
+.selfbox{position:absolute;left:calc(18% - 1px);top:10px;display:flex;align-items:center;gap:12px;opacity:0;transform:translateX(-8px) scale(.97);transform-origin:left center;transition:opacity .5s var(--ease),transform .5s var(--ease)}
+.selfbox .loop{width:34px;height:40px;border:2px solid var(--gold);border-left:0;border-radius:0 12px 12px 0}
+.selfbox .card{padding:10px 14px;border-radius:12px;border:2px solid rgba(244,183,40,.35);background:rgba(244,183,40,.07);font:12.5px/1.45 var(--mono)}
+.selfbox .card .k{color:var(--gold)}
+.selfbox .card .h{color:var(--muted)}
+.msg.self.on .selfbox{opacity:1;transform:none}
+
+.log{font:12.5px/1.75 var(--mono);padding:18px 20px 22px;min-height:320px}
+.log .ln{display:flex;gap:12px;opacity:0;transform:translateY(4px);transition:opacity .35s var(--ease),transform .35s var(--ease);white-space:nowrap}
+.log .ln.on{opacity:1;transform:none}
+.log .ln .t{color:var(--dim);flex:none}
+.log .ln .m{overflow:hidden;text-overflow:ellipsis}
+.c-g{color:var(--gold)}.c-ok{color:var(--green)}.c-m{color:var(--muted)}.c-r{color:var(--red)}
+.code{font:13px/1.75 var(--mono);padding:18px 20px;color:#c9ced6;border-top:2px solid var(--line);white-space:pre;overflow-x:auto}
+.code .kw{color:#c792ea}.code .s{color:#c3e88d}.code .f{color:var(--gold)}.code .cm{color:var(--dim)}
+
+/* leak section */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.term{font:13px/1.8 var(--mono);padding:20px;min-height:300px}
+.term .row{white-space:pre-wrap;word-break:break-all}
+.term .prompt{color:var(--gold)}
+.caret{display:inline-block;width:8px;height:16px;background:var(--gold);vertical-align:-3px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.out-err{color:var(--red)}.out-ok{color:var(--green)}
+
+.ledger-wrap{padding:18px 18px 20px;position:relative}
+.vk{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:2px solid rgba(244,183,40,.3);border-radius:12px;background:rgba(244,183,40,.06);margin-bottom:14px;font:12px/1.4 var(--mono)}
+.vk .k{display:flex;align-items:center;gap:10px;min-width:0}
+.vk .k svg{width:18px;height:18px;color:var(--gold);flex:none}
+.vk .k span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vk .tag{color:var(--gold);white-space:nowrap}
+.ledger{position:relative}
+.ledger .tx{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:center;height:38px;padding:0 10px;border-radius:8px;font:12.5px/1 var(--mono);color:var(--dim);position:relative;z-index:1;transition:color .3s,background .4s}
+.ledger .tx .i{color:#3d434c}
+.ledger .tx .v{white-space:nowrap;overflow:hidden;text-overflow:clip}
+.ledger .tx.probe{color:var(--muted)}
+.ledger .tx.open{color:var(--text);background:rgba(244,183,40,.08)}
+.ledger .tx.open .v{color:var(--gold-2)}
+.band{position:absolute;left:0;right:0;top:0;height:38px;border-radius:8px;border:2px solid rgba(244,183,40,.55);box-shadow:0 0 30px rgba(244,183,40,.18),inset 0 0 18px rgba(244,183,40,.08);transition:transform .14s linear,opacity .4s;opacity:0;z-index:2;pointer-events:none}
+.ledger-foot{display:flex;justify-content:space-between;margin-top:14px;font:11.5px/1.4 var(--mono);color:var(--dim)}
+.ledger-foot b{color:var(--gold);font-weight:500}
+
+.points{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:20px}
+.point{padding:24px;border:2px solid var(--line);border-radius:16px;background:var(--bg-2)}
+.point h3{font-size:17px;font-weight:600;letter-spacing:-.01em;margin-bottom:8px;display:flex;gap:10px;align-items:center}
+.point h3 svg{width:18px;height:18px;color:var(--gold);flex:none}
+.point p{color:var(--muted);font-size:15px}
+.point code{font-size:13px;color:var(--text);background:rgba(255,255,255,.05);padding:2px 6px;border-radius:5px}
+
+/* packages bento */
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+.pkg{grid-column:span 2;padding:26px;border:2px solid var(--line);border-radius:18px;background:var(--bg-2);position:relative;overflow:hidden;transition:border-color .3s,transform .4s var(--ease);isolation:isolate}
+.pkg.wide{grid-column:span 3}
+.pkg::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),rgba(244,183,40,.11),transparent 45%);opacity:0;transition:opacity .35s}
+.pkg:hover{border-color:rgba(244,183,40,.3);transform:translateY(-3px)}
+.pkg:hover::before{opacity:1}
+.pkg .ic{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;border:2px solid var(--line-2);background:var(--surface);margin-bottom:22px}
+.pkg .ic svg{width:20px;height:20px;color:var(--gold)}
+.pkg .nm{font:600 14px/1 var(--mono);color:var(--gold);margin-bottom:10px}
+.pkg h3{font-size:21px;letter-spacing:-.02em;font-weight:600;margin-bottom:8px}
+.pkg p{color:var(--muted);font-size:15px}
+.pkg pre{margin-top:20px;font:12.5px/1.7 var(--mono);color:#c9ced6;background:rgba(0,0,0,.35);border:2px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto}
+.pkg pre .f{color:var(--gold)}.pkg pre .s{color:#c3e88d}.pkg pre .kw{color:#c792ea}.pkg pre .cm{color:var(--dim)}
+.tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}
+.tools span{font:11.5px/1 var(--mono);padding:7px 9px;border-radius:7px;border:2px solid var(--line);color:var(--muted)}
+
+/* real vs mock */
+.rvm{display:grid;grid-template-columns:1.4fr 1fr;gap:20px;align-items:stretch}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:16px 20px;border-bottom:2px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-top:18px}
+th.real{color:var(--green)}th.mock{color:var(--gold)}
+td:first-child{color:var(--muted);font:13px/1.5 var(--mono);white-space:nowrap}
+td code{font-size:13px}
+.adapter{padding:26px;display:flex;flex-direction:column;gap:14px;justify-content:center}
+.adapter svg{width:100%;height:auto}
+.note{font-size:14px;color:var(--muted);border-left:2px solid var(--gold);padding-left:14px}
+.note b{color:var(--text);font-weight:500}
+
+/* tracks */
+.tracks{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.track-card{padding:28px;border:2px solid var(--line);border-radius:18px;background:var(--bg-2);display:flex;flex-direction:column;gap:14px;transition:border-color .3s,transform .4s var(--ease)}
+.track-card:hover{border-color:var(--line-2);transform:translateY(-3px)}
+.track-card .t{font:500 12px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.track-card h3{font-size:22px;letter-spacing:-.02em;font-weight:600}
+.track-card p{color:var(--muted);font-size:15px}
+.track-card ul{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:8px}
+.track-card li{font:12.5px/1.4 var(--mono);color:var(--text);display:flex;gap:10px}
+.track-card li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--gold);margin-top:6px;flex:none}
+
+/* cta */
+.final{padding:140px 0 120px;text-align:center;position:relative}
+.final h2{margin:18px auto 18px;max-width:14em}
+.final .sub{margin:0 auto}
+.final .cta-row{justify-content:center}
+.final .kicker{justify-content:center}
+.final .kicker::before{display:none}
+footer{border-top:2px solid var(--line);padding:28px 0;color:var(--dim);font:12.5px/1.5 var(--mono)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer a{color:var(--muted)}footer a:hover{color:var(--text)}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .9s var(--ease),transform .9s var(--ease);transition-delay:calc(var(--i,0) * 80ms)}
+.rv.in{opacity:1;transform:none}
+
+@media (max-width:980px){
+  .hero-grid,.x402,.two,.rvm{grid-template-columns:1fr}
+  .stage{max-width:560px;margin:10px auto 0}
+  .points,.tracks{grid-template-columns:1fr}
+  .bento{grid-template-columns:1fr 1fr}
+  .pkg,.pkg.wide{grid-column:span 1}
+  .pkg:last-child{grid-column:span 2}
+  .stats{grid-template-columns:1fr 1fr}
+  .stat:nth-child(2){border-right:0}
+  .stat:nth-child(-n+2){border-bottom:2px solid var(--line)}
+}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  .nav-links a:not(.btn){display:none}
+  .hero{padding-top:44px}
+  section{padding-top:88px}
+  .bento{grid-template-columns:1fr}
+  .pkg:last-child{grid-column:span 1}
+  .msg .lbl{font-size:11px;padding:0 4%}
+  .selfbox .card{font-size:11px;padding:8px 10px}
+  .actor .chip{font-size:13px;padding:8px 10px}
+  table{font-size:13.5px;table-layout:fixed}
+  td:first-child{white-space:normal;width:78px}
+  th,td{padding:14px 10px;overflow-wrap:anywhere}
+  .stat{padding:20px 16px}.stat .n{font-size:28px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  html{scroll-behavior:auto}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div class="bg-grid" aria-hidden="true"></div>
+<div class="bg-glow" aria-hidden="true"></div>
+
+<nav id="nav">
+  <div class="wrap nav-in">
+    <a href="#top" class="brand" aria-label="zcash-toolkit home">
+      <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 2.5 27 7v8.2c0 6.6-4.6 12-11 14.3C9.6 27.2 5 21.8 5 15.2V7l11-4.5Z" stroke="#f4b728" stroke-width="2.2" stroke-linejoin="round"/><path d="M11.5 11.5h9l-9 9h9" stroke="#f4b728" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      zcash-toolkit
+    </a>
+    <div class="nav-links">
+      <a href="demo/">Playground</a>
+      <a href="#x402">x402</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#packages">Packages</a>
+      <a href="#real">Real vs mock</a>
+      <a class="btn" href="https://github.com/sammy-XXIV/zcash-toolkit" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+  <header class="hero">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <span class="eyebrow rv"><span class="dot"></span>ZECATHON 2026 · Core &amp; Tooling</span>
+          <h1 class="rv" style="--i:1">Private money<br>for <span class="g">machines.</span></h1>
+          <p class="lede rv" style="--i:2">A TypeScript toolkit that gives Node.js apps and AI agents a <b>shielded-only</b> Zcash wallet. Pay-per-call APIs, MCP tools, privacy audits and a React checkout. <b>No transparent output is possible.</b></p>
+          <div class="cta-row rv" style="--i:3">
+            <a class="btn btn-gold" href="https://github.com/sammy-XXIV/zcash-toolkit" target="_blank" rel="noopener">
+              View on GitHub
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <a class="btn" href="demo/">Open playground</a>
+            <div class="clone">
+              <span><span class="p">$</span> git clone github.com/sammy-XXIV/zcash-toolkit</span>
+              <button class="copy" data-copy="git clone https://github.com/sammy-XXIV/zcash-toolkit" aria-label="Copy clone command">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="stage rv" style="--i:2">
+          <canvas id="lens" role="img" aria-label="Animation: readable payments flow into a shielded pool and leave as encrypted notes"></canvas>
+          <div class="stage-cap" aria-hidden="true"><span><b>In:</b> what a public chain shows</span><span><b>Out:</b> what Zcash shows</span></div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat rv"><div class="n" data-count="5">0</div><div class="l">packages, one API</div></div>
+        <div class="stat rv" style="--i:1"><div class="n" data-count="36">0</div><div class="l">tests passing</div></div>
+        <div class="stat rv" style="--i:2"><div class="n"><em>0</em></div><div class="l">transparent outputs possible</div></div>
+        <div class="stat rv" style="--i:3"><div class="n" data-count="5">0</div><div class="l">MCP tools for agents</div></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- x402 -->
+  <section id="x402">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="kicker rv">@zcash-toolkit/x402</div>
+        <h2 class="rv" style="--i:1">HTTP 402, finally paid in private.</h2>
+        <p class="sub rv" style="--i:2">The server answers with a payment challenge. The agent pays shielded, attaches a viewing-key proof and retries. One function call on each side.</p>
+      </div>
+
+      <div class="x402">
+        <div class="panel rv">
+          <div class="seq" id="seq">
+            <div class="actors">
+              <div class="actor"><span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4M9 14h.01M15 14h.01"/></svg>AI agent</span><small>fetchWithPayment()</small></div>
+              <div class="actor"><span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg>Paid API</span><small>requirePayment()</small></div>
+            </div>
+            <div class="lifeline a" aria-hidden="true"></div>
+            <div class="lifeline b" aria-hidden="true"></div>
+            <ol class="msgs" aria-label="x402 payment sequence">
+              <li class="msg r"><span class="lbl"><b>GET</b> /api/data</span><div class="track"><div class="line"></div><div class="head"></div><div class="pkt"><i></i></div></div></li>
+              <li class="msg l err"><span class="lbl"><b>402</b> Payment Required <em>· X-Payment-Required</em></span><div class="track"><div class="line"></div><div class="head"></div><div class="pkt"><i></i></div></div></li>
+              <li class="msg self"><div class="selfbox"><div class="loop"></div><div class="card"><span class="k">wallet.send</span>(0.001 ZEC → u1qx…)<br><span class="h">orchard · txid </span><span id="txid">7f3a91c2…c21e</span></div></div></li>
+              <li class="msg r"><span class="lbl"><b>GET</b> /api/data <em>· X-Payment: eyJ0eGlk…</em></span><div class="track"><div class="line"></div><div class="head"></div><div class="pkt"><i></i></div></div></li>
+              <li class="msg l ok"><span class="lbl"><b>200</b> OK</span><div class="track"><div class="line"></div><div class="head"></div><div class="pkt"><i></i></div></div></li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="panel rv" style="--i:1">
+          <div class="panel-bar"><div class="lights"><i></i><i></i><i></i></div><span>agent.log</span><span></span></div>
+          <div class="log" id="log">
+            <div class="ln"><span class="t">00.000</span><span class="m"><span class="c-m">→</span> GET /api/data</span></div>
+            <div class="ln"><span class="t">00.041</span><span class="m"><span class="c-g">← 402</span> amount=0.001 recipient=u1qx…8k</span></div>
+            <div class="ln"><span class="t">01.208</span><span class="m"><span class="c-g">send</span> orchard → u1qx…8k <span class="c-m">memo="x402 payment"</span></span></div>
+            <div class="ln"><span class="t">01.214</span><span class="m"><span class="c-g">proof</span> viewingKeyProof attached</span></div>
+            <div class="ln"><span class="t">01.226</span><span class="m"><span class="c-m">→</span> GET /api/data <span class="c-m">X-Payment</span></span></div>
+            <div class="ln"><span class="t">01.262</span><span class="m"><span class="c-ok">← 200 OK</span></span></div>
+          </div>
+          <div class="code"><span class="cm">// server</span>
+app.get(<span class="s">"/api/data"</span>,
+  <span class="f">requirePayment</span>({ recipient, amount: <span class="s">"0.001"</span> }),
+  handler);
+
+<span class="cm">// agent</span>
+<span class="kw">const</span> res = <span class="kw">await</span> <span class="f">fetchWithPayment</span>(url, wallet);</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- privacy -->
+  <section id="privacy">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="kicker rv">Why it does not leak</div>
+        <h2 class="rv" style="--i:1">Privacy by construction, not by convention.</h2>
+        <p class="sub rv" style="--i:2">Transparent addresses are rejected at the API boundary. Disclosure is a key you hand out per payment, never the wallet.</p>
+      </div>
+
+      <div class="two">
+        <div class="panel rv">
+          <div class="panel-bar"><div class="lights"><i></i><i></i><i></i></div><span>node --import tsx</span><span></span></div>
+          <div class="term" id="term" aria-live="off"></div>
+        </div>
+
+        <div class="panel rv" style="--i:1">
+          <div class="panel-bar"><div class="lights"><i></i><i></i><i></i></div><span>wallet.paymentProof(txid)</span><span></span></div>
+          <div class="ledger-wrap">
+            <div class="vk">
+              <div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.8-9.8M17 6l3 3M14.5 8.5l2 2"/></svg><span>viewing key → merchant</span></div>
+              <span class="tag" id="vktag">reveals 1 of 8</span>
+            </div>
+            <div class="ledger" id="ledger"><div class="band" id="band"></div></div>
+            <div class="ledger-foot"><span>on-chain: commitments only</span><span>disclosed: <b id="disc">—</b></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="points">
+        <div class="point rv"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/></svg>t-addresses refused</h3><p><code>send()</code> and <code>newAddress()</code> throw on any transparent address. There is no code path that creates a transparent output.</p></div>
+        <div class="point rv" style="--i:1"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.8-9.8M17 6l3 3"/></svg>Selective disclosure</h3><p><code>paymentProof()</code> proves one payment to one merchant. No seed, no balance, no other history.</p></div>
+        <div class="point rv" style="--i:2"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>Audited in CI</h3><p><code>zcash-audit</code> flags transparent-pool notes as critical and exits <code>2</code>. Missing memos and dust get warnings.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- packages -->
+  <section id="packages">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="kicker rv">Five packages</div>
+        <h2 class="rv" style="--i:1">Everything between a seed phrase and a paid request.</h2>
+      </div>
+      <div class="bento">
+        <article class="pkg wide rv">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5 20 6v6c0 4.8-3.3 8.6-8 10-4.7-1.4-8-5.2-8-10V6l8-3.5Z"/></svg></div>
+          <div class="nm">@zcash-toolkit/core</div>
+          <h3>Shielded wallet SDK</h3>
+          <p>Send, balance, history and viewing-key payment proofs. Real zcash.js adapter or in-memory mock, chosen automatically.</p>
+<pre><span class="kw">const</span> wallet = <span class="kw">await</span> ZcashWallet.<span class="f">fromSeed</span>(seed);
+<span class="kw">const</span> txid = <span class="kw">await</span> wallet.<span class="f">send</span>({ to, amount: <span class="s">"0.05"</span> });
+<span class="kw">const</span> proof = <span class="kw">await</span> wallet.<span class="f">paymentProof</span>(txid);</pre>
+        </article>
+        <article class="pkg wide rv" style="--i:1">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4M9 14h.01M15 14h.01"/></svg></div>
+          <div class="nm">@zcash-toolkit/agent</div>
+          <h3>MCP wallet server</h3>
+          <p>Hands an AI agent a wallet with a leash: per-transaction caps, daily limits and recipient allow-lists.</p>
+          <div class="tools"><span>get_address</span><span>get_balance</span><span>send_zec</span><span>payment_proof</span><span>get_history</span></div>
+<pre><span class="kw">await</span> <span class="f">startAgentServer</span>({
+  wallet,
+  policy: { maxPerTx: <span class="s">"0.1"</span>, dailyLimit: <span class="s">"1.0"</span> },
+});</pre>
+        </article>
+        <article class="pkg rv">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg></div>
+          <div class="nm">@zcash-toolkit/x402</div>
+          <h3>Pay-per-call</h3>
+          <p>Express middleware that issues 402 challenges, and a fetch that pays them.</p>
+        </article>
+        <article class="pkg rv" style="--i:1">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
+          <div class="nm">@zcash-toolkit/audit</div>
+          <h3>Privacy audit CLI</h3>
+          <p>Scans history for transparent-pool use, missing memos and dust. CI-ready exit codes.</p>
+        </article>
+        <article class="pkg rv" style="--i:2">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          <div class="nm">@zcash-toolkit/gate</div>
+          <h3>React payment gate</h3>
+          <p><code class="mono" style="font-size:13px">&lt;ZcashPaymentGate&gt;</code> with QR checkout and proof verification helpers.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- real vs mock -->
+  <section id="real">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="kicker rv">Real vs mock</div>
+        <h2 class="rv" style="--i:1">Exactly what is real, and what is not.</h2>
+        <p class="sub rv" style="--i:2">One API surface, two adapters. The wallet picks the real one when the platform supports it and tells you when it does not.</p>
+      </div>
+      <div class="rvm">
+        <div class="panel rv">
+          <table>
+            <thead><tr><th></th><th class="real">Real adapter</th><th class="mock">Mock adapter</th></tr></thead>
+            <tbody>
+              <tr><td>runtime</td><td>Linux + Node 22.23.4</td><td>Windows, macOS, Node 24+</td></tr>
+              <tr><td>backend</td><td><code>@zcashlabs/zcash.js</code> → testnet.zec.rocks:443</td><td>in-memory notes</td></tr>
+              <tr><td>ZEC moves</td><td>yes, testnet</td><td>no</td></tr>
+              <tr><td>API</td><td>identical</td><td>identical</td></tr>
+              <tr><td>selected by</td><td><code>fromSeed()</code></td><td>automatic fallback, or inject <code>createMockAdapter()</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="panel adapter rv" style="--i:1">
+          <svg viewBox="0 0 320 190" fill="none" aria-label="ZcashWallet routes to the zcash.js adapter or the mock adapter">
+            <rect x="100" y="8" width="120" height="40" rx="9" stroke="#f4b728" stroke-width="2" fill="rgba(244,183,40,.07)"/>
+            <text x="160" y="33" text-anchor="middle" fill="#eceef1" font-family="JetBrains Mono" font-size="12">ZcashWallet</text>
+            <path id="pA" d="M140 48 C140 90, 70 90, 70 130" stroke="rgba(255,255,255,.18)" stroke-width="2"/>
+            <path id="pB" d="M180 48 C180 90, 250 90, 250 130" stroke="rgba(255,255,255,.18)" stroke-width="2" stroke-dasharray="4 5"/>
+            <circle r="4" fill="#3ddc97"><animateMotion dur="2.6s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines=".65 0 .35 1"><mpath href="#pA"/></animateMotion></circle>
+            <circle r="4" fill="#f4b728"><animateMotion dur="2.6s" begin="1.3s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines=".65 0 .35 1"><mpath href="#pB"/></animateMotion></circle>
+            <rect x="10" y="130" width="120" height="48" rx="9" stroke="rgba(61,220,151,.6)" stroke-width="2"/>
+            <text x="70" y="151" text-anchor="middle" fill="#eceef1" font-family="JetBrains Mono" font-size="11">zcash.js</text>
+            <text x="70" y="167" text-anchor="middle" fill="#8b929c" font-family="JetBrains Mono" font-size="10">lightwalletd</text>
+            <rect x="190" y="130" width="120" height="48" rx="9" stroke="rgba(244,183,40,.5)" stroke-width="2"/>
+            <text x="250" y="151" text-anchor="middle" fill="#eceef1" font-family="JetBrains Mono" font-size="11">mock</text>
+            <text x="250" y="167" text-anchor="middle" fill="#8b929c" font-family="JetBrains Mono" font-size="10">in-memory</text>
+          </svg>
+          <p class="note"><b>Honest scope:</b> x402 and gate verification check proof structure today: recipient, amount, txid and viewing-key proof. Confirming the txid on-chain through lightwalletd is the next step.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- tracks -->
+  <section id="tracks">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="kicker rv">Built to be built on</div>
+        <h2 class="rv" style="--i:1">The ZEC layer for every other track.</h2>
+        <p class="sub rv" style="--i:2">Teams on Payments, Private Markets and Cross-chain can import a wallet instead of writing one.</p>
+      </div>
+      <div class="tracks">
+        <div class="track-card rv"><span class="t">Payments</span><h3>POS, payroll, subscriptions</h3><p>Gate a checkout route, let an agent pay invoices, drop a React gate on a page.</p><ul><li>requirePayment()</li><li>fetchWithPayment()</li><li>&lt;ZcashPaymentGate&gt;</li></ul></div>
+        <div class="track-card rv" style="--i:1"><span class="t">Private Markets</span><h3>Sealed bids, settlement</h3><p>Encrypted bids in memos, settlement proven to one auditor, leakage checked before launch.</p><ul><li>send({ memo })</li><li>paymentProof()</li><li>runAudit()</li></ul></div>
+        <div class="track-card rv" style="--i:2"><span class="t">Cross-chain</span><h3>The ZEC leg of an intent</h3><p>Accept the Zcash side of a swap and check it settled before releasing the other asset.</p><ul><li>requirePayment()</li><li>verifyPaymentProof()</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final">
+    <div class="wrap">
+      <div class="kicker rv">Open source · MIT</div>
+      <h2 class="rv" style="--i:1">Give your agent a wallet that <span style="color:var(--gold)">keeps quiet.</span></h2>
+      <p class="sub rv" style="--i:2">Clone it, run the tests, point it at testnet.</p>
+      <div class="cta-row rv" style="--i:3">
+        <a class="btn" href="demo/">Open playground</a>
+        <a class="btn btn-gold" href="https://github.com/sammy-XXIV/zcash-toolkit" target="_blank" rel="noopener">View on GitHub
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <div class="clone"><span><span class="p">$</span> pnpm install &amp;&amp; pnpm test</span>
+          <button class="copy" data-copy="pnpm install && pnpm test" aria-label="Copy install command"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap"><span>zcash-toolkit · ZECATHON 2026 · Core &amp; Tooling</span><a href="https://github.com/sammy-XXIV/zcash-toolkit" target="_blank" rel="noopener">github.com/sammy-XXIV/zcash-toolkit</a></div>
+</footer>
+
+<script>
+(() => {
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const HEX = '0123456789abcdef';
+const B58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+const rnd = (a, b) => a + Math.random() * (b - a);
+const pick = s => s[Math.floor(Math.random() * s.length)];
+const str = (n, set) => Array.from({ length: n }, () => pick(set)).join('');
+
+/* nav */
+const nav = $('#nav');
+const onScroll = () => nav.classList.toggle('scrolled', scrollY > 12);
+addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+/* copy */
+$$('.copy').forEach(b => b.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(b.dataset.copy); } catch {}
+  b.classList.add('ok');
+  const old = b.innerHTML;
+  b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>';
+  setTimeout(() => { b.classList.remove('ok'); b.innerHTML = old; }, 1400);
+}));
+
+/* reveal + counters */
+const countUp = el => {
+  const to = +el.dataset.count; if (RM) { el.textContent = to; return; }
+  const t0 = performance.now(), d = 1100;
+  const step = t => { const p = Math.min(1, (t - t0) / d); el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+};
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return;
+  e.target.classList.add('in');
+  $$('[data-count]', e.target).forEach(countUp);
+  io.unobserve(e.target);
+}), { threshold: .14, rootMargin: '0px 0px -40px 0px' });
+$$('.rv').forEach(el => io.observe(el));
+
+/* bento pointer glow */
+$$('.pkg').forEach(c => c.addEventListener('pointermove', e => {
+  const r = c.getBoundingClientRect();
+  c.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+  c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+}));
+
+/* run loop only while visible */
+const whenVisible = (el, start, stop) => {
+  new IntersectionObserver(([e]) => e.isIntersecting ? start() : stop(), { threshold: .2 }).observe(el);
+};
+
+/* scramble text */
+const scramble = (el, to, dur = 700, set = HEX) => new Promise(res => {
+  if (RM) { el.textContent = to; return res(); }
+  const from = el.textContent, len = Math.max(from.length, to.length), t0 = performance.now();
+  const order = Array.from({ length: len }, () => Math.random());
+  const tick = t => {
+    const p = Math.min(1, (t - t0) / dur); let out = '';
+    for (let i = 0; i < len; i++) {
+      if (p >= order[i]) out += to[i] ?? '';
+      else if (p > order[i] - .35) out += to[i] === ' ' ? ' ' : pick(set);
+      else out += from[i] ?? '';
+    }
+    el.textContent = out;
+    p < 1 ? requestAnimationFrame(tick) : (el.textContent = to, res());
+  };
+  requestAnimationFrame(tick);
+});
+
+/* ───────── hero: shielded pool ───────── */
+(() => {
+  const cv = $('#lens'), ctx = cv.getContext('2d');
+  let W, H, cx, cy, R, dpr, narrow, raf = 0, last = 0, t = 0, spawnIn = 0, spawnOut = .6;
+  const ins = [], notes = [], outs = [], pulses = [];
+  const glow = document.createElement('canvas');
+  glow.width = glow.height = 64;
+  { const g = glow.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gr.addColorStop(0, 'rgba(255,211,107,1)'); gr.addColorStop(.18, 'rgba(244,183,40,.8)'); gr.addColorStop(1, 'rgba(244,183,40,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, 64, 64); }
+
+  const resize = () => {
+    const r = cv.getBoundingClientRect(); dpr = Math.min(devicePixelRatio || 1, 2);
+    W = r.width; H = r.height; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    narrow = W < 480; cx = W * (narrow ? .64 : .57); cy = H * .47; R = Math.min(W, H) * (narrow ? .21 : .235);
+  };
+  const bez = (p0, p1, p2, u) => { const v = 1 - u; return v * v * p0 + 2 * v * u * p1 + u * u * p2; };
+  const ease = u => u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+  const memos = ['invoice #2041', 'payroll · oct', 'api call', 'rent', 'bid #77', 'sub · monthly', 'refund'];
+
+  const spawnInbound = () => {
+    const y0 = cy + rnd(-H * .38, H * .38);
+    const phi = Math.PI + ((y0 - cy) / (H * .38)) * -.75;
+    const tx = cx + R * Math.cos(phi), ty = cy + R * Math.sin(phi);
+    const amt = rnd(.001, .9).toFixed(3);
+    const text = `${amt} ZEC`, sub = Math.random() < .55 ? `from t1${str(3, B58)}…${str(3, B58)}` : pick(memos);
+    ins.push({ x0: -10, y0, cx1: (cx - R) * .5, cy1: y0, x1: tx, y1: ty, phi, u: 0, d: rnd(3.8, 5.2), text, sub, shown: text, shownSub: sub });
+  };
+  const spawnOutbound = () => {
+    if (notes.length < 8) return;
+    const n = notes.splice(Math.floor(Math.random() * notes.length), 1)[0];
+    const phi = rnd(-.7, .7);
+    const sx = cx + R * Math.cos(phi), sy = cy + R * Math.sin(phi);
+    const ey = cy + rnd(-H * .36, H * .36);
+    outs.push({ x0: sx, y0: sy, cx1: cx + R + (W - cx - R) * .45, cy1: ey, x1: W + 12, y1: ey, u: 0, d: rnd(3.4, 4.6), w: Math.round(rnd(7, 12)) });
+    pulses.push({ a: phi, r: R, life: 1 });
+    return n;
+  };
+
+  const dashedRing = (r, dash, gap, rot, alpha, lw = 1.5) => {
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot);
+    ctx.setLineDash([dash, gap]); ctx.lineWidth = lw; ctx.strokeStyle = `rgba(244,183,40,${alpha})`;
+    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+  };
+
+  const step = dt => {
+    t += dt;
+    spawnIn -= dt; if (spawnIn <= 0) { spawnInbound(); spawnIn = rnd(.55, 1.05); }
+    spawnOut -= dt; if (spawnOut <= 0) { spawnOutbound(); spawnOut = rnd(.7, 1.2); }
+
+    for (let i = ins.length - 1; i >= 0; i--) {
+      const p = ins[i]; p.u += dt / p.d;
+      if (p.u > .48) {
+        const k = (p.u - .48) / .3, sc = s => [...s].map((ch, j) => ch === ' ' ? ' ' : (j / s.length < k * 1.3 ? pick(HEX) : ch)).join('');
+        p.shown = sc(p.text); p.shownSub = sc(p.sub);
+      }
+      if (p.u >= 1) {
+        ins.splice(i, 1);
+        notes.push({ a: p.phi, r: R * .96, rt: rnd(.46, .88) * R, w: rnd(.18, .5), age: 0, s: rnd(.8, 1.25) });
+        pulses.push({ a: p.phi, r: R, life: 1 });
+        if (notes.length > 64) notes.shift();
+      }
+    }
+    for (const n of notes) { n.a += n.w * dt; n.r += (n.rt - n.r) * (1 - Math.exp(-dt * 1.6)); n.age += dt; }
+    for (let i = outs.length - 1; i >= 0; i--) { const o = outs[i]; o.u += dt / o.d; if (o.u >= 1) outs.splice(i, 1); }
+    for (let i = pulses.length - 1; i >= 0; i--) { pulses[i].life -= dt * 1.4; if (pulses[i].life <= 0) pulses.splice(i, 1); }
+  };
+
+  const draw = () => {
+    ctx.clearRect(0, 0, W, H);
+    const bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 1.6);
+    bg.addColorStop(0, 'rgba(244,183,40,.11)'); bg.addColorStop(.6, 'rgba(244,183,40,.035)'); bg.addColorStop(1, 'rgba(244,183,40,0)');
+    ctx.fillStyle = bg; ctx.beginPath(); ctx.arc(cx, cy, R * 1.6, 0, Math.PI * 2); ctx.fill();
+
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(t * .025);
+    for (let i = 0; i < 96; i++) {
+      const a = i / 96 * Math.PI * 2, long = i % 8 === 0, r0 = R * 1.14, r1 = r0 + (long ? 9 : 4);
+      ctx.strokeStyle = `rgba(255,255,255,${long ? .22 : .09})`; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(Math.cos(a) * r0, Math.sin(a) * r0); ctx.lineTo(Math.cos(a) * r1, Math.sin(a) * r1); ctx.stroke();
+    }
+    ctx.restore();
+    dashedRing(R * .84, 2, 9, t * .12, .35);
+    dashedRing(R * .6, 18, 10, -t * .08, .18);
+    dashedRing(R * .36, 1, 6, t * .2, .3);
+    ctx.strokeStyle = 'rgba(244,183,40,.7)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.stroke();
+
+    for (const p of pulses) {
+      const k = 1 - p.life;
+      ctx.strokeStyle = `rgba(244,183,40,${p.life * .5})`; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(cx, cy, R + k * 22, p.a - .35 - k * .2, p.a + .35 + k * .2); ctx.stroke();
+    }
+
+    ctx.globalCompositeOperation = 'lighter';
+    for (const n of notes) {
+      const x = cx + Math.cos(n.a) * n.r, y = cy + Math.sin(n.a) * n.r, a = Math.min(1, n.age * 2);
+      const s = 14 * n.s; ctx.globalAlpha = a * .9;
+      ctx.drawImage(glow, x - s / 2, y - s / 2, s, s);
+    }
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+
+    ctx.font = '500 10px "JetBrains Mono", monospace'; ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(244,183,40,.85)'; ctx.fillText('S H I E L D E D', cx, cy - 4);
+    ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillText('orchard pool', cx, cy + 12);
+
+    ctx.textAlign = 'right';
+    for (const p of ins) {
+      const u = ease(Math.min(1, p.u));
+      const x = bez(p.x0, p.cx1, p.x1, u), y = bez(p.y0, p.cy1, p.y1, u);
+      const fadeIn = Math.min(1, x / 70), k = Math.min(1, Math.max(0, (p.u - .48) / .3));
+      const label = (1 - k) * Math.max(0, Math.min(1, (x - (narrow ? 78 : 120)) / 50));
+      ctx.strokeStyle = `rgba(255,255,255,${.08 * fadeIn})`; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(x, y); const ub = ease(Math.max(0, p.u - .08)); ctx.lineTo(bez(p.x0, p.cx1, p.x1, ub), bez(p.y0, p.cy1, p.y1, ub)); ctx.stroke();
+      const r = 255, g = Math.round(255 - k * 72), b = Math.round(255 - k * 215);
+      ctx.fillStyle = `rgba(${r},${g},${b},${fadeIn})`;
+      ctx.beginPath(); ctx.arc(x, y, 2.6, 0, Math.PI * 2); ctx.fill();
+      if (label > .02) {
+        ctx.font = '500 11px "JetBrains Mono", monospace'; ctx.fillStyle = `rgba(236,238,241,${label * .92})`; ctx.fillText(p.shown, x - 10, y - 10);
+        ctx.font = '10px "JetBrains Mono", monospace'; ctx.fillStyle = `rgba(139,146,156,${label * .85})`; ctx.fillText(p.shownSub, x - 10, y + 4);
+      }
+    }
+
+    for (const o of outs) {
+      const u = ease(o.u);
+      const x = bez(o.x0, o.cx1, o.x1, u), y = bez(o.y0, o.cy1, o.y1, u);
+      const a = Math.min(1, o.u * 4) * Math.min(1, (W - x) / 60);
+      ctx.globalAlpha = Math.max(0, a);
+      ctx.drawImage(glow, x - 6, y - 6, 12, 12);
+      ctx.fillStyle = 'rgba(255,255,255,.14)';
+      const bx = x + 10, by = y - 15;
+      ctx.beginPath(); ctx.roundRect ? ctx.roundRect(bx, by, o.w * 6.6, 9, 2) : ctx.rect(bx, by, o.w * 6.6, 9); ctx.fill();
+      ctx.fillStyle = 'rgba(244,183,40,.25)';
+      ctx.beginPath(); ctx.roundRect ? ctx.roundRect(bx + o.w * 6.6 + 5, by, 30, 9, 2) : ctx.rect(bx + o.w * 6.6 + 5, by, 30, 9); ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  };
+
+  const loop = now => {
+    const dt = Math.min(.05, (now - last) / 1000 || 0); last = now;
+    step(dt); draw(); raf = requestAnimationFrame(loop);
+  };
+  const start = () => { if (!raf && !RM) { last = performance.now(); raf = requestAnimationFrame(loop); } };
+  const stop = () => { cancelAnimationFrame(raf); raf = 0; };
+
+  resize();
+  for (let i = 0; i < 520; i++) step(1 / 60);
+  draw();
+  new ResizeObserver(() => { resize(); draw(); }).observe(cv);
+  document.fonts && document.fonts.ready.then(draw);
+  whenVisible(cv, start, stop);
+  document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
+})();
+
+/* ───────── x402 sequence ───────── */
+(() => {
+  const seq = $('#seq'), msgs = $$('.msg', seq), lines = $$('#log .ln'), txid = $('#txid');
+  const setW = () => msgs.forEach(m => { const tr = $('.track', m); if (tr) m.style.setProperty('--w', tr.offsetWidth + 'px'); });
+  setW(); new ResizeObserver(setW).observe(seq);
+  const logFor = [[0], [1], [2, 3], [4], [5]];
+  let running = false, gen = 0;
+  const run = async () => {
+    const my = ++gen;
+    while (running && my === gen) {
+      msgs.forEach(m => m.classList.remove('on')); lines.forEach(l => l.classList.remove('on'));
+      await sleep(700);
+      for (let i = 0; i < msgs.length; i++) {
+        if (!running || my !== gen) return;
+        msgs[i].classList.add('on');
+        if (i === 2) scramble(txid, `${str(8, HEX)}…${str(4, HEX)}`, 900);
+        await sleep(i === 2 ? 500 : 650);
+        for (const j of logFor[i]) { lines[j].classList.add('on'); await sleep(140); }
+        await sleep(i === 2 ? 900 : 650);
+      }
+      await sleep(2600);
+    }
+  };
+  if (RM) { msgs.forEach(m => m.classList.add('on')); lines.forEach(l => l.classList.add('on')); return; }
+  whenVisible(seq, () => { if (!running) { running = true; run(); } }, () => { running = false; gen++; });
+})();
+
+/* ───────── t-address refusal terminal ───────── */
+(() => {
+  const term = $('#term');
+  const script = [
+    ['cmd', 'await wallet.send({ to: "t1Kz9fQx…aP2", amount: "0.1" })'],
+    ['err', 'Error: send() refused: recipient "t1Kz9fQx…aP2" is a transparent address'],
+    ['gap'],
+    ['cmd', 'await wallet.send({ to: "u1qx7k…3m8k", amount: "0.1" })'],
+    ['ok', "'7f3a91c2d04e…c21e'   // orchard, shielded"],
+    ['gap'],
+    ['cmd', 'await wallet.newAddress()'],
+    ['ok', "'u1qx7kp0…w9a3m8k'    // never t1…"],
+  ];
+  let running = false, gen = 0;
+  const caret = () => { const c = document.createElement('span'); c.className = 'caret'; return c; };
+  const render = () => { term.innerHTML = ''; for (const [k, s] of script) { const r = document.createElement('div'); r.className = 'row'; if (k === 'cmd') r.innerHTML = '<span class="prompt">› </span>' + s.replace(/</g, '&lt;'); else if (k === 'gap') r.innerHTML = '&nbsp;'; else { r.className += k === 'err' ? ' out-err' : ' out-ok'; r.textContent = s; } term.appendChild(r); } };
+  const run = async () => {
+    const my = ++gen;
+    while (running && my === gen) {
+      term.innerHTML = '';
+      for (const [k, s] of script) {
+        if (!running || my !== gen) return;
+        const r = document.createElement('div'); r.className = 'row'; term.appendChild(r);
+        if (k === 'gap') { r.innerHTML = '&nbsp;'; continue; }
+        if (k === 'cmd') {
+          r.innerHTML = '<span class="prompt">› </span>'; const tx = document.createElement('span'); r.appendChild(tx); const c = caret(); r.appendChild(c);
+          for (let i = 0; i < s.length; i++) { if (!running || my !== gen) return; tx.textContent = s.slice(0, i + 1); await sleep(18 + Math.random() * 26); }
+          await sleep(380); c.remove();
+        } else {
+          r.className += k === 'err' ? ' out-err' : ' out-ok'; r.style.opacity = 0; r.style.transition = 'opacity .4s';
+          r.textContent = s; requestAnimationFrame(() => r.style.opacity = 1); await sleep(900);
+        }
+      }
+      const end = document.createElement('div'); end.className = 'row'; end.innerHTML = '<span class="prompt">› </span>'; end.appendChild(caret()); term.appendChild(end);
+      await sleep(4200);
+    }
+  };
+  if (RM) { render(); return; }
+  whenVisible(term, () => { if (!running) { running = true; run(); } }, () => { running = false; gen++; });
+})();
+
+/* ───────── viewing-key selective disclosure ───────── */
+(() => {
+  const ledger = $('#ledger'), band = $('#band'), disc = $('#disc');
+  const N = 8, rows = [];
+  const plain = ['0.050 ZEC → u1qx…8k · memo: invoice #2041', '0.001 ZEC → u1m3…p0 · memo: api call', '0.250 ZEC → u1z8…4c · memo: payroll oct', '0.120 ZEC → u1aa…7e · memo: bid #77'];
+  const cm = () => `cm ${str(10, HEX)} ${str(10, HEX)} ${str(10, HEX)} ${str(6, HEX)}`;
+  for (let i = 0; i < N; i++) {
+    const r = document.createElement('div'); r.className = 'tx';
+    r.innerHTML = `<span class="i">${String(i + 1).padStart(2, '0')}</span><span class="v"></span>`;
+    const v = $('.v', r); v.textContent = cm(); r._cm = v.textContent; ledger.appendChild(r); rows.push(r);
+  }
+  let running = false, gen = 0, k = 0;
+  const run = async () => {
+    const my = ++gen;
+    while (running && my === gen) {
+      const target = [2, 5, 1, 6][k % 4], text = plain[k % 4]; k++;
+      band.style.opacity = 1;
+      for (let i = 0; i <= target; i++) {
+        if (!running || my !== gen) return;
+        band.style.transform = `translateY(${rows[i].offsetTop}px)`;
+        rows[i].classList.add('probe'); await sleep(170); rows[i].classList.remove('probe');
+      }
+      rows[target].classList.add('open');
+      disc.textContent = `tx ${String(target + 1).padStart(2, '0')}`;
+      await scramble($('.v', rows[target]), text, 800);
+      await sleep(2400);
+      band.style.opacity = 0;
+      rows[target].classList.remove('open');
+      await scramble($('.v', rows[target]), rows[target]._cm = cm(), 600);
+      disc.textContent = '—';
+      await sleep(700);
+    }
+  };
+  if (RM) { rows[2].classList.add('open'); $('.v', rows[2]).textContent = plain[0]; disc.textContent = 'tx 03'; return; }
+  whenVisible(ledger, () => { if (!running) { running = true; run(); } }, () => { running = false; gen++; });
+})();
+})();
+</script>
+</body>
+</html>
