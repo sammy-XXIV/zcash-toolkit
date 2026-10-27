@@ -6,8 +6,8 @@
  *
  * Run: ZCASH_SEED="your seed" npx tsx agent.ts
  */
-import { ZcashWallet, createMockAdapter } from "@zcash-agent-kit/core";
-import { startAgentServer } from "@zcash-agent-kit/agent";
+import { ZcashWallet, createMockAdapter } from "@zcash-toolkit/core";
+import { startAgentServer } from "@zcash-toolkit/agent";
 
 const seed = process.env.ZCASH_SEED ?? "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
 const network = (process.env.ZCASH_NETWORK ?? "testnet") as "mainnet" | "testnet";

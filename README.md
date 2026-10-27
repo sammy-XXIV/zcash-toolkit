@@ -1,4 +1,4 @@
-# zcash-agent-kit
+# zcash-toolkit
 
 TypeScript monorepo giving AI agents private money via Zcash shielded transactions.
 
@@ -8,11 +8,11 @@ Built for ZECATHON 2026 — Core & Tooling track.
 
 | Package | Description |
 |---------|-------------|
-| `@zcash-agent-kit/core` | `ZcashWallet` SDK — shielded send, balance, payment proofs |
-| `@zcash-agent-kit/x402` | HTTP 402 pay-per-call middleware + auto-paying `fetchWithPayment` |
-| `@zcash-agent-kit/agent` | MCP wallet server with spending policy for AI agents |
-| `@zcash-agent-kit/audit` | Privacy audit CLI — flags transparent pool usage, missing memos, dust |
-| `@zcash-agent-kit/gate` | React `<ZcashPaymentGate>` component |
+| `@zcash-toolkit/core` | `ZcashWallet` SDK — shielded send, balance, payment proofs |
+| `@zcash-toolkit/x402` | HTTP 402 pay-per-call middleware + auto-paying `fetchWithPayment` |
+| `@zcash-toolkit/agent` | MCP wallet server with spending policy for AI agents |
+| `@zcash-toolkit/audit` | Privacy audit CLI — flags transparent pool usage, missing memos, dust |
+| `@zcash-toolkit/gate` | React `<ZcashPaymentGate>` component |
 
 ## Quick start
 
@@ -35,7 +35,7 @@ ZCASH_SEED="your 24-word seed" npx zcash-audit
 ### ZcashWallet (core)
 
 ```ts
-import { ZcashWallet } from "@zcash-agent-kit/core";
+import { ZcashWallet } from "@zcash-toolkit/core";
 
 const wallet = await ZcashWallet.fromSeed(mnemonic, { network: "testnet" });
 const addr = await wallet.newAddress();           // always u1... (Orchard)
@@ -46,7 +46,7 @@ const proof = await wallet.paymentProof(txid);   // selective disclosure
 ### x402 middleware
 
 ```ts
-import { requirePayment, fetchWithPayment } from "@zcash-agent-kit/x402";
+import { requirePayment, fetchWithPayment } from "@zcash-toolkit/x402";
 
 // Server
 app.get("/api/data", requirePayment({ recipient: "u1...", amount: "0.001" }), handler);
@@ -58,7 +58,7 @@ const res = await fetchWithPayment("http://localhost:3000/api/data", wallet);
 ### MCP agent server
 
 ```ts
-import { startAgentServer } from "@zcash-agent-kit/agent";
+import { startAgentServer } from "@zcash-toolkit/agent";
 
 await startAgentServer({ wallet, policy: { maxPerTx: "0.1", dailyLimit: "1.0" } });
 ```

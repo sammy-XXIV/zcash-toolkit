@@ -1,6 +1,6 @@
 import { describe, it, before } from "node:test";
 import assert from "node:assert/strict";
-import { ZcashWallet, createMockAdapter } from "@zcash-agent-kit/core";
+import { ZcashWallet, createMockAdapter } from "@zcash-toolkit/core";
 import { SpendingPolicyEngine } from "../src/policy.js";
 import { makeWalletTools } from "../src/tools.js";
 

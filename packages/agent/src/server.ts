@@ -4,7 +4,7 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import type { ZcashWallet } from "@zcash-agent-kit/core";
+import type { ZcashWallet } from "@zcash-toolkit/core";
 import { SpendingPolicyEngine, type SpendingPolicy } from "./policy.js";
 import { makeWalletTools } from "./tools.js";
 
@@ -23,7 +23,7 @@ export async function startAgentServer(opts: AgentServerOptions): Promise<void> 
   const tools = makeWalletTools(opts.wallet, policy);
 
   const server = new Server(
-    { name: "zcash-agent-kit", version: "0.1.0" },
+    { name: "zcash-toolkit", version: "0.1.0" },
     { capabilities: { tools: {} } }
   );
 

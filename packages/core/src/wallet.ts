@@ -41,7 +41,7 @@ export class ZcashWallet extends EventEmitter {
     // zcash.js requires Linux + Node 22.23.4 — skip on Windows to avoid worker crash
     if (process.platform === "win32") {
       console.warn(
-        "[zcash-agent-kit] Windows detected. Using mock adapter.\n" +
+        "[zcash-toolkit] Windows detected. Using mock adapter.\n" +
         "  For real transactions: Linux + Node 22.23.4 required."
       );
       return new ZcashWallet(createMockAdapter());
@@ -53,7 +53,7 @@ export class ZcashWallet extends EventEmitter {
     } catch (e) {
       if (e instanceof AdapterUnavailableError) {
         console.warn(
-          `[zcash-agent-kit] ${e.message}. Using mock adapter.\n` +
+          `[zcash-toolkit] ${e.message}. Using mock adapter.\n` +
           `  For real transactions: Linux + Node 22.23.4 required.`
         );
         return new ZcashWallet(createMockAdapter());

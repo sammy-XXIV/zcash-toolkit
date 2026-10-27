@@ -1,5 +1,5 @@
 {
-  "name": "zcash-agent-kit",
+  "name": "zcash-toolkit",
   "private": true,
   "scripts": {
     "build": "pnpm -r build",

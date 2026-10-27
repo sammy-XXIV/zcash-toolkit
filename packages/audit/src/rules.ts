@@ -1,4 +1,4 @@
-import type { Note } from "@zcash-agent-kit/core";
+import type { Note } from "@zcash-toolkit/core";
 
 export interface AuditFinding {
   severity: "critical" | "warn" | "info";

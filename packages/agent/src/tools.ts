@@ -1,4 +1,4 @@
-import type { ZcashWallet } from "@zcash-agent-kit/core";
+import type { ZcashWallet } from "@zcash-toolkit/core";
 import type { SpendingPolicyEngine } from "./policy.js";
 
 export interface ToolResult {

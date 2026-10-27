@@ -17,16 +17,16 @@ importers:
 
   demo:
     dependencies:
-      '@zcash-agent-kit/agent':
+      '@zcash-toolkit/agent':
         specifier: workspace:*
         version: link:../packages/agent
-      '@zcash-agent-kit/audit':
+      '@zcash-toolkit/audit':
         specifier: workspace:*
         version: link:../packages/audit
-      '@zcash-agent-kit/core':
+      '@zcash-toolkit/core':
         specifier: workspace:*
         version: link:../packages/core
-      '@zcash-agent-kit/x402':
+      '@zcash-toolkit/x402':
         specifier: workspace:*
         version: link:../packages/x402
       express:
@@ -48,7 +48,7 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.0.0
         version: 1.32.2(zod@4.6.7)
-      '@zcash-agent-kit/core':
+      '@zcash-toolkit/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -64,7 +64,7 @@ importers:
 
   packages/audit:
     dependencies:
-      '@zcash-agent-kit/core':
+      '@zcash-toolkit/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -96,7 +96,7 @@ importers:
 
   packages/gate:
     dependencies:
-      '@zcash-agent-kit/core':
+      '@zcash-toolkit/core':
         specifier: workspace:*
         version: link:../core
       react:
@@ -121,7 +121,7 @@ importers:
 
   packages/x402:
     dependencies:
-      '@zcash-agent-kit/core':
+      '@zcash-toolkit/core':
         specifier: workspace:*
         version: link:../core
       express:

@@ -1,5 +1,5 @@
 {
-  "name": "@zcash-agent-kit/agent",
+  "name": "@zcash-toolkit/agent",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -16,7 +16,7 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "@zcash-agent-kit/core": "workspace:*",
+    "@zcash-toolkit/core": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.0.0"
   },
   "devDependencies": {

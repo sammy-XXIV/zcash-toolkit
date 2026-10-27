@@ -1,5 +1,5 @@
 {
-  "name": "@zcash-agent-kit/audit",
+  "name": "@zcash-toolkit/audit",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -19,7 +19,7 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "@zcash-agent-kit/core": "workspace:*"
+    "@zcash-toolkit/core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

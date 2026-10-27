@@ -1,4 +1,4 @@
-import type { ZcashWallet, Note } from "@zcash-agent-kit/core";
+import type { ZcashWallet, Note } from "@zcash-toolkit/core";
 import { ALL_RULES, type AuditFinding, type AuditRule } from "./rules.js";
 
 export interface AuditReport {

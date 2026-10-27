@@ -7,8 +7,8 @@
  * Run: ZCASH_SEED="your seed" npx tsx server.ts
  */
 import express from "express";
-import { ZcashWallet, createMockAdapter } from "@zcash-agent-kit/core";
-import { requirePayment } from "@zcash-agent-kit/x402";
+import { ZcashWallet, createMockAdapter } from "@zcash-toolkit/core";
+import { requirePayment } from "@zcash-toolkit/x402";
 
 const seed = process.env.ZCASH_SEED ?? "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
 const network = (process.env.ZCASH_NETWORK ?? "testnet") as "mainnet" | "testnet";
@@ -33,7 +33,7 @@ async function main() {
     (_req, res) => {
       res.json({
         secret: "The Zcash shielded pool uses zk-SNARKs to prove validity without revealing sender, recipient, or amount.",
-        source: "zcash-agent-kit demo",
+        source: "zcash-toolkit demo",
       });
     }
   );

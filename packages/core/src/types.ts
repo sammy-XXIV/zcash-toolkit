@@ -1,11 +1,11 @@
-// zcash-agent-kit/core — shared types
+// zcash-toolkit/core — shared types
 
 export interface WalletConfig {
   seed: string;
   network?: "mainnet" | "testnet";
   /** default: testnet.zec.rocks:443 */
   lightwalletd?: string;
-  /** default: ~/.zcash-agent-kit/<fingerprint> on Linux */
+  /** default: ~/.zcash-toolkit/<fingerprint> on Linux */
   dataDir?: string;
 }
 

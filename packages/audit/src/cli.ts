@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { ZcashWallet, createMockAdapter } from "@zcash-agent-kit/core";
+import { ZcashWallet, createMockAdapter } from "@zcash-toolkit/core";
 import { runAudit } from "./tracer.js";
 
 async function main() {

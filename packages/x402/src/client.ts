@@ -1,4 +1,4 @@
-import type { ZcashWallet } from "@zcash-agent-kit/core";
+import type { ZcashWallet } from "@zcash-toolkit/core";
 import type { PaymentProofHeader } from "./types.js";
 
 const HEADER_PAYMENT_REQUIRED = "x-payment-required";

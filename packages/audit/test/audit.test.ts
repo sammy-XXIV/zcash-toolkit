@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { ZcashWallet, createMockAdapter } from "@zcash-agent-kit/core";
-import type { Note } from "@zcash-agent-kit/core";
+import { ZcashWallet, createMockAdapter } from "@zcash-toolkit/core";
+import type { Note } from "@zcash-toolkit/core";
 import { noTransparentPool, memoPresence, dustThreshold, runAudit } from "../src/index.js";
 
 const SEED = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
