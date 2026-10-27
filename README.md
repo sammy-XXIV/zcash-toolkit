@@ -96,6 +96,47 @@ gate    uses core  →  React ZcashPaymentGate + verify helpers
 - `paymentProof()` uses viewing keys for selective disclosure without full wallet access
 - Audit CLI flags any transparent-pool leakage as **critical**
 
+## Built for ZECATHON — usable across all tracks
+
+`zcash-toolkit` is infrastructure. Other ZECATHON entries don't need to write wallet code from scratch.
+
+### Payments track (POS / payroll / remittance / subscriptions)
+```ts
+// Private point-of-sale in 3 lines
+app.post("/checkout", requirePayment({ recipient: "u1...", amount: "0.05" }), handler);
+
+// AI agent auto-pays invoices
+const res = await fetchWithPayment("https://payroll-api.example/run", wallet);
+
+// React checkout gate
+<ZcashPaymentGate recipient="u1..." amount="0.05" onVerified={unlock} />
+```
+
+### Private Markets track (dark pools / sealed-bid auctions / settlement)
+```ts
+// Prove settlement happened — without revealing wallet or counterparty
+const proof = await wallet.paymentProof(txid);
+// share proof.viewingKeyProof with auditor only
+
+// Verify no transparent-pool leakage before going live
+const report = await runAudit(wallet);
+if (report.summary.critical > 0) throw new Error("transparent leak detected");
+
+// Encrypted bid via memo field
+await wallet.send({ to: auctionAddr, amount: bidAmount, memo: encryptedBid });
+```
+
+### Cross-chain track (ZEC leg of swaps / intents)
+```ts
+// Drop-in ZEC payment endpoint for the Zcash side of a cross-chain intent
+app.post("/zec-leg", requirePayment({ recipient: "u1...", amount: req.body.amount }), settle);
+
+// Verify the ZEC side settled before releasing the other asset
+const { valid } = verifyPaymentProof(proof, expectedRecipient, expectedAmount);
+```
+
+> **If you're building on another track and need a ZEC wallet layer** — clone this repo, `pnpm install`, import `@zcash-toolkit/core`. No lightwalletd setup required for testing (mock adapter runs everywhere).
+
 ## License
 
 MIT
