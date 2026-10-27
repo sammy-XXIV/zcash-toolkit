@@ -1,0 +1,30 @@
+{
+  "name": "@zcash-agent-kit/x402",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "tsx --test test/*.test.ts",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@zcash-agent-kit/core": "workspace:*",
+    "express": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^20.0.0",
+    "supertest": "^7.0.0",
+    "@types/supertest": "^6.0.0",
+    "typescript": "^5.5.0",
+    "tsx": "^4.0.0"
+  }
+}

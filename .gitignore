@@ -1,1 +1,5 @@
-node_modules\ndist\n.superpowers
+node_modules
+dist
+.superpowers
+*.log
+.env

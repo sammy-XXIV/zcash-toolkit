@@ -1,0 +1,22 @@
+{
+  "name": "zcash-agent-kit-demo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "server": "tsx server.ts",
+    "agent": "tsx agent.ts"
+  },
+  "dependencies": {
+    "@zcash-agent-kit/core": "workspace:*",
+    "@zcash-agent-kit/x402": "workspace:*",
+    "@zcash-agent-kit/agent": "workspace:*",
+    "@zcash-agent-kit/audit": "workspace:*",
+    "express": "^5.0.0",
+    "tsx": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "typescript": "^5.5.0"
+  }
+}
