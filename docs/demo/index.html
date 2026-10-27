@@ -10,114 +10,186 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#07080a;--bg-2:#0c0e12;--surface:#101318;--surface-2:#151920;
+  --bg:#07080a;--bg-2:#0b0d11;--surface:#0f1217;--surface-2:#141820;
   --line:rgba(255,255,255,.07);--line-2:rgba(255,255,255,.13);
-  --text:#eceef1;--muted:#9aa1ab;--dim:#5a616b;
-  --gold:#f4b728;--gold-2:#ffd36b;--red:#ff5d52;--green:#3ddc97;--blue:#7cb7ff;
+  --text:#eceef1;--muted:#9aa1ab;--dim:#5d646e;
+  --gold:#f4b728;--gold-2:#ffd36b;--gold-a:rgba(244,183,40,.08);
+  --red:#ff5d52;--green:#3ddc97;--blue:#7cb7ff;
   --display:"Bebas Neue",Impact,"Arial Narrow",sans-serif;--sans:"Source Sans 3",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;
   --ease:cubic-bezier(.2,.7,.2,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font:17px/1.6 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+code{font-family:var(--mono);font-size:.88em}
 ::selection{background:var(--gold);color:#000}
 :focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
-*{scrollbar-width:thin;scrollbar-color:#2a2f37 transparent}
-.bg-grid{position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 80% 45% at 50% 0%,#000 10%,transparent 70%);opacity:.5}
-.wrap{max-width:1180px;margin:0 auto;padding:0 24px;position:relative}
-nav{position:sticky;top:0;z-index:20;background:rgba(7,8,10,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:2px solid var(--line)}
+*{scrollbar-width:thin;scrollbar-color:#262b33 transparent}
+.bg-grid{position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 70% 40% at 50% 0%,#000 10%,transparent 70%);opacity:.45}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px;position:relative}
+
+nav{position:sticky;top:0;z-index:30;background:rgba(7,8,10,.8);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:2px solid var(--line)}
 .nav-in{display:flex;align-items:center;justify-content:space-between;height:64px;gap:12px}
 .brand{display:flex;align-items:center;gap:10px;font:400 24px/1 var(--display);letter-spacing:.04em}
 .brand svg{width:24px;height:24px}
-.brand small{font:500 11px/1 var(--mono);color:var(--gold);border:2px solid rgba(244,183,40,.3);padding:5px 8px;border-radius:999px;letter-spacing:.06em;text-transform:uppercase}
-.nav-r{display:flex;gap:6px}
+.brand small{font:500 11px/1 var(--mono);color:var(--gold);border:2px solid rgba(244,183,40,.3);padding:5px 8px;border-radius:999px;letter-spacing:.08em}
+.nav-r{display:flex;gap:4px}
 .nav-r a{font-size:15px;font-weight:500;color:var(--muted);padding:8px 12px;border-radius:8px;transition:color .2s,background .2s}
 .nav-r a:hover{color:var(--text);background:rgba(255,255,255,.04)}
 
-header{padding:64px 0 28px}
-.kicker{font:500 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:10px}
-.kicker::before{content:"";width:22px;height:2px;background:var(--gold)}
-h1{font:400 clamp(52px,6.4vw,96px)/.9 var(--display);letter-spacing:.006em;margin:20px 0 22px}
-.sub{color:var(--muted);font-size:19px;max-width:38em}
-.sub b{color:var(--text);font-weight:500}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
-.chip{font:500 12px/1 var(--mono);padding:8px 11px;border-radius:999px;border:2px solid var(--line-2);color:var(--muted);display:inline-flex;gap:8px;align-items:center}
-.chip i{width:7px;height:7px;border-radius:50%;background:var(--green)}
-.chip.g i{background:var(--gold)}.chip.r i{background:var(--red)}
+.top{padding:52px 0 36px;display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap}
+.top h1{font:400 clamp(56px,6.6vw,96px)/.88 var(--display);letter-spacing:.01em}
+.top h1 em{font-style:normal;color:var(--gold)}
+.top p{color:var(--muted);font-size:18px;max-width:34em;margin-top:14px}
+.top p b{color:var(--text);font-weight:600}
+.facts{display:grid;grid-template-columns:repeat(3,auto);border:2px solid var(--line);border-radius:14px;overflow:hidden}
+.facts div{padding:12px 18px;border-right:2px solid var(--line)}
+.facts div:last-child{border-right:0}
+.facts span{display:block;font:500 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.facts b{font:400 22px/1 var(--display);letter-spacing:.03em}
+.facts .g{color:var(--green)}.facts .y{color:var(--gold)}.facts .r{color:var(--red)}
 
-.wallet{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;justify-content:space-between;margin:28px 0 24px;padding:16px 20px;border:2px solid var(--line);border-radius:14px;background:var(--bg-2)}
-.wallet .f{display:flex;flex-direction:column;gap:4px;min-width:0}
-.wallet .k{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
-.wallet .v{font:13px/1.3 var(--mono);color:var(--text);overflow-wrap:anywhere}
-.wallet .v.g{color:var(--gold)}
+.lab{display:grid;grid-template-columns:300px minmax(0,1fr);gap:24px;align-items:start;padding-bottom:96px}
+aside{position:sticky;top:88px;display:flex;flex-direction:column;gap:16px}
+.lab>*,aside>*{min-width:0}
+.box{border:2px solid var(--line);border-radius:16px;background:var(--bg-2)}
+.lbl{font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
 
-.card{border:2px solid var(--line);border-radius:18px;background:linear-gradient(180deg,var(--surface),var(--bg-2));margin-bottom:24px;overflow:hidden}
-.card-h{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:26px 28px 0;flex-wrap:wrap}
-.card-h h2{font:400 38px/1 var(--display);letter-spacing:.015em;display:flex;gap:14px;align-items:baseline}
-.card-h h2 .n{font:400 38px/1 var(--display);color:var(--gold)}
-.card-h .pkg{font:12px/1 var(--mono);color:var(--dim)}
-.card-d{padding:8px 28px 0;color:var(--muted);font-size:16px;max-width:50em}
-.card-b{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:24px;padding:22px 28px 28px}
+.wallet{padding:18px}
+.wallet-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.tag{font:500 10.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:5px 8px;border-radius:6px;border:2px solid rgba(244,183,40,.3);color:var(--gold)}
+.addr{font:12.5px/1.45 var(--mono);color:var(--gold-2);word-break:break-all;padding:10px 12px;border-radius:10px;background:rgba(0,0,0,.35);border:2px solid var(--line)}
+.wstats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.wstats div{padding:10px 12px;border-radius:10px;border:2px solid var(--line)}
+.wstats b{display:block;font:400 32px/1 var(--display);letter-spacing:.02em;margin-top:6px;transition:color .3s}
+.wstats .bad b{color:var(--red)}
+.nlist{display:flex;flex-direction:column;margin-bottom:12px;min-height:30px}
+.nrow{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;font:12px/1.3 var(--mono);padding:7px 0;border-bottom:1px solid var(--line);animation:fade .4s var(--ease)}
+.nrow:last-child{border-bottom:0}
+.nrow .p{font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:5px;color:var(--gold);background:var(--gold-a)}
+.nrow .p.transparent{color:var(--red);background:rgba(255,93,82,.1)}
+.nrow .m{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nempty{font:12px/1.4 var(--mono);color:var(--dim);padding:6px 0}
+.ghost{width:100%;padding:10px;border-radius:10px;border:2px solid var(--line-2);background:none;cursor:pointer;font-weight:600;font-size:14px;color:var(--muted);transition:color .2s,border-color .2s;min-height:44px}
+.ghost:hover{color:var(--text);border-color:rgba(255,255,255,.25)}
 
-label{display:block;font:500 12px/1 var(--mono);color:var(--muted);margin:0 0 7px;letter-spacing:.02em}
-.field{margin-bottom:14px}
-input,select,textarea{width:100%;font:13.5px/1.4 var(--mono);color:var(--text);background:rgba(0,0,0,.35);border:2px solid var(--line-2);border-radius:10px;padding:11px 12px;transition:border-color .2s;min-height:44px}
-textarea{min-height:92px;resize:vertical}
-input:focus,select:focus,textarea:focus{outline:none;border-color:rgba(244,183,40,.6)}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.presets{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.presets button{font:12px/1 var(--mono);padding:8px 10px;border-radius:8px;border:2px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;transition:border-color .2s,color .2s}
-.presets button:hover{border-color:var(--line-2);color:var(--text)}
-.presets button.t{color:#ff9b93}
-.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
-.btn{display:inline-flex;align-items:center;gap:8px;font:600 15px/1 var(--sans);padding:12px 16px;border-radius:10px;border:2px solid var(--line-2);color:var(--text);background:transparent;cursor:pointer;min-height:44px;transition:transform .2s var(--ease),border-color .2s,background .2s,opacity .2s}
+.snav{padding:8px}
+.snav button{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:6px;width:100%;text-align:left;padding:12px 12px 12px 10px;border:0;border-radius:11px;background:none;cursor:pointer;transition:background .2s;position:relative}
+.snav button:hover{background:rgba(255,255,255,.03)}
+.snav button.on{background:var(--gold-a)}
+.snav button.on::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:2px;border-radius:2px;background:var(--gold)}
+.snav .n{font:400 30px/1 var(--display);color:var(--dim);transition:color .2s}
+.snav button.on .n{color:var(--gold)}
+.snav .t{font-weight:600;font-size:15.5px;line-height:1.2}
+.snav .s{display:block;font:11.5px/1.3 var(--mono);color:var(--dim);margin-top:3px}
+.snav .st{width:20px;height:20px;border-radius:50%;border:2px solid var(--line-2);display:grid;place-items:center;transition:all .3s}
+.snav .st.part{border-color:var(--gold)}
+.snav .st.full{border-color:var(--green);background:var(--green)}
+.snav .st svg{width:11px;height:11px;color:#04140c;opacity:0}
+.snav .st.full svg{opacity:1}
+
+.stage{padding:30px 32px 32px;min-height:600px}
+.scn{display:none;animation:fade .45s var(--ease)}
+.scn.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}}
+.sc-h{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.sc-h h2{font:400 clamp(40px,4vw,54px)/.95 var(--display);letter-spacing:.012em;display:flex;gap:16px;align-items:baseline}
+.sc-h h2 span{color:var(--gold)}
+.sc-h .pk{font:12px/1 var(--mono);color:var(--dim)}
+.sc-d{color:var(--muted);font-size:17px;max-width:40em;margin:10px 0 24px}
+
+.panel{display:flex;flex-wrap:wrap;border:2px solid var(--line);border-radius:12px;margin-bottom:22px;overflow:hidden}
+.panel>div,.panel>div>div{flex:1 1 140px;padding:12px 16px;border-right:2px solid var(--line)}
+.panel>div:last-child,.panel>div>div:last-child{border-right:0}
+.panel b{display:block;font:500 14px/1.4 var(--mono);margin-top:6px;word-break:break-all}
+.panel b.big{font:400 28px/1 var(--display);letter-spacing:.02em}
+.panel .gold{color:var(--gold)}.panel .red{color:var(--red)}.panel .green{color:var(--green)}
+.meter{height:6px;border-radius:6px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:10px}
+.meter i{display:block;height:100%;width:0;border-radius:6px;background:linear-gradient(90deg,var(--gold),var(--gold-2));transition:width .6s var(--ease),background .3s}
+.meter i.full{background:var(--red)}
+
+.steps{list-style:none;border-top:2px solid var(--line)}
+.step{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:16px;align-items:center;padding:16px 0;border-bottom:2px solid var(--line);transition:opacity .3s}
+.step.locked{opacity:.45}
+.num{width:34px;height:34px;border-radius:50%;border:2px solid var(--line-2);display:grid;place-items:center;font:500 12.5px/1 var(--mono);color:var(--muted);transition:all .3s}
+.step.next .num{border-color:var(--gold);color:var(--gold)}
+.step.done .num{border-color:var(--gold);background:var(--gold);color:#140e00}
+.st-t{font-weight:600;font-size:16.5px;line-height:1.3;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.st-s{color:var(--muted);font-size:14.5px;margin-top:3px}
+.pill{font:600 10.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:5px 8px;border-radius:6px;animation:pop .35s var(--ease);white-space:nowrap}
+@keyframes pop{from{opacity:0;transform:scale(.85)}}
+.k-ok{color:var(--green);background:rgba(61,220,151,.1)}
+.k-err{color:var(--red);background:rgba(255,93,82,.1)}
+.k-warn{color:var(--gold);background:rgba(244,183,40,.1)}
+.k-net{color:var(--blue);background:rgba(124,183,255,.1)}
+.k-info{color:var(--muted);background:rgba(255,255,255,.06)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 14.5px/1 var(--sans);padding:0 16px;height:42px;border-radius:10px;border:2px solid var(--line-2);background:none;cursor:pointer;white-space:nowrap;transition:transform .2s var(--ease),background .2s,border-color .2s,color .2s,opacity .2s}
 .btn:hover{border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
-.btn:active{transform:translateY(0)}
-.btn.gold{background:var(--gold);border-color:var(--gold);color:#120d00}
-.btn.gold:hover{background:var(--gold-2);border-color:var(--gold-2)}
-.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.btn .sp{width:14px;height:14px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:spin .7s linear infinite;display:none}
-.btn.busy .sp{display:inline-block}
+.btn:active{transform:none}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.step.next .btn,.btn.gold{background:var(--gold);border-color:var(--gold);color:#140e00}
+.step.next .btn:hover,.btn.gold:hover{background:var(--gold-2);border-color:var(--gold-2)}
+.btn .sp{width:13px;height:13px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:spin .7s linear infinite;display:none}
+.btn.busy .sp{display:block}
 @keyframes spin{to{transform:rotate(360deg)}}
-.endpoint{font:13px/1.5 var(--mono);padding:12px 14px;border-radius:10px;border:2px solid var(--line);background:rgba(0,0,0,.3);margin-bottom:14px}
-.endpoint b{color:var(--gold);font-weight:500}
-.endpoint span{color:var(--muted)}
-.check{display:flex;align-items:center;gap:10px;font:13px/1.3 var(--mono);color:var(--muted);margin:-2px 0 14px;cursor:pointer}
-.check input{width:18px;height:18px;min-height:0;accent-color:var(--gold)}
-.meter{margin:4px 0 16px}
-.meter .bar{height:8px;border-radius:8px;background:rgba(255,255,255,.06);overflow:hidden}
-.meter .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold-2));border-radius:8px;transition:width .6s var(--ease)}
-.meter .t{display:flex;justify-content:space-between;font:12px/1 var(--mono);color:var(--muted);margin-top:8px}
-.sum{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 14px}
-.sum span{font:12px/1 var(--mono);padding:8px 10px;border-radius:8px;border:2px solid var(--line)}
-.sum .c{color:var(--red)}.sum .w{color:var(--gold)}.sum .x{color:var(--text)}
 
-.con{border:2px solid var(--line);border-radius:12px;background:#050608;display:flex;flex-direction:column;min-height:300px;max-height:420px;min-width:0}
-.con-h{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:2px solid var(--line);font:12px/1 var(--mono);color:var(--dim)}
-.con-h button{font:12px/1 var(--mono);color:var(--dim);background:none;border:0;cursor:pointer;padding:6px 8px;border-radius:6px}
-.con-h button:hover{color:var(--text);background:rgba(255,255,255,.05)}
-.con-b{padding:12px 14px;overflow:auto;font:12.5px/1.65 var(--mono);flex:1}
-.con-b .e{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;animation:in .35s var(--ease)}
-@keyframes in{from{opacity:0;transform:translateY(4px)}}
-.con-b .ts{color:#3d434c}
-.con-b .m{white-space:pre-wrap;overflow-wrap:anywhere;color:#c9ced6}
-.con-b .ok .m{color:var(--green)}.con-b .err .m{color:var(--red)}.con-b .gold .m{color:var(--gold)}.con-b .dim .m{color:var(--muted)}.con-b .blue .m{color:var(--blue)}
-.con-b .empty{color:var(--dim)}
+details.custom{margin-top:18px;border:2px solid var(--line);border-radius:12px}
+details.custom summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:15px;color:var(--muted)}
+details.custom summary::-webkit-details-marker{display:none}
+details.custom summary::after{content:"+";font:400 22px/1 var(--mono);color:var(--dim);transition:transform .25s var(--ease)}
+details.custom[open] summary::after{transform:rotate(45deg)}
+details.custom summary:hover{color:var(--text)}
+.cbody{padding:4px 16px 16px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:end}
+.cbody .wide{grid-column:1/-1}
+label{display:block;font:500 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:7px}
+input,select{width:100%;font:13px/1.4 var(--mono);color:var(--text);background:rgba(0,0,0,.35);border:2px solid var(--line-2);border-radius:10px;padding:0 12px;height:42px;transition:border-color .2s}
+input:focus,select:focus{outline:none;border-color:rgba(244,183,40,.6)}
+.chk{display:flex;align-items:center;gap:10px;font:14.5px/1 var(--sans);text-transform:none;letter-spacing:0;color:var(--muted);height:42px;margin:0;cursor:pointer}
+.chk input{width:18px;height:18px;accent-color:var(--gold)}
 
-.notes{margin-top:14px;border-top:2px solid var(--line);padding-top:14px}
-.notes .k{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
-.note{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:10px;align-items:center;font:12.5px/1.4 var(--mono);padding:7px 0;border-bottom:1px solid var(--line)}
-.note:last-child{border-bottom:0}
-.pool{font-size:11px;padding:3px 7px;border-radius:6px;border:2px solid rgba(244,183,40,.35);color:var(--gold)}
-.pool.transparent{border-color:rgba(255,93,82,.45);color:var(--red)}
-.note .memo{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.out{margin-top:26px}
+.out-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.out-h button{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);background:none;border:0;cursor:pointer;padding:6px 8px;border-radius:6px}
+.out-h button:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.tl{display:flex;flex-direction:column;gap:10px}
+.tl-empty{border:2px dashed var(--line-2);border-radius:12px;padding:26px;text-align:center;color:var(--dim);font-size:15px}
+.ev{border:2px solid var(--line);border-radius:12px;background:#050608;overflow:hidden;animation:slide .45s var(--ease)}
+@keyframes slide{from{opacity:0;transform:translateY(-8px)}}
+.ev-h{display:flex;align-items:center;gap:12px;padding:11px 14px}
+.ev-h code{flex:1;min-width:0;font-size:12.5px;color:#c9ced6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ev-h time{font:11.5px/1 var(--mono);color:var(--dim);flex:none}
+.ev pre{margin:0;padding:12px 14px 14px;border-top:2px solid var(--line);font:12.5px/1.65 var(--mono);color:#c9ced6;white-space:pre-wrap;word-break:break-word;max-height:260px;overflow:auto}
+.ev.err{border-color:rgba(255,93,82,.22)}
+.ev.ok{border-color:rgba(61,220,151,.18)}
+.ev.warn{border-color:rgba(244,183,40,.2)}
+.ev pre .j-k{color:var(--blue)}.ev pre .j-s{color:#c3e88d}.ev pre .j-n{color:var(--gold)}
 
-footer{border-top:2px solid var(--line);padding:26px 0 40px;margin-top:40px;color:var(--dim);font:12.5px/1.7 var(--mono)}
-footer code{color:var(--muted)}
+footer{border-top:2px solid var(--line);padding:24px 0 36px;color:var(--dim);font:12.5px/1.7 var(--mono)}
+footer code{color:var(--muted);font-size:12.5px}
 footer a{color:var(--muted);text-decoration:underline;text-underline-offset:3px}
 
-@media (max-width:900px){.card-b{grid-template-columns:1fr}.con{min-height:220px}}
-@media (max-width:640px){.wrap{padding:0 16px}.card-h,.card-d{padding-left:16px;padding-right:16px}.card-b{padding:16px}.row{grid-template-columns:1fr}.nav-r a.hide{display:none}header{padding-top:40px}}
+@media (max-width:980px){
+  .lab{grid-template-columns:1fr}
+  aside{position:static;display:grid;grid-template-columns:1fr 1fr}
+}
+@media (max-width:700px){
+  .wrap{padding:0 16px}
+  aside{grid-template-columns:1fr}
+  .snav{display:flex;overflow-x:auto;gap:4px}
+  .snav button{grid-template-columns:auto;min-width:150px;gap:2px;padding:10px 12px}
+  .snav .st{display:none}
+  .snav button.on::before{left:12px;right:12px;top:auto;bottom:0;width:auto;height:2px}
+  .stage{padding:22px 18px}
+  .step{grid-template-columns:30px minmax(0,1fr);row-gap:12px}
+  .step .btn{grid-column:2;justify-self:start}
+  .num{width:30px;height:30px}
+  .cbody{grid-template-columns:1fr}
+  .cbody [style*="span 2"]{grid-column:auto!important}
+  .facts{width:100%}
+  .facts div{padding:10px 12px}
+  .nav-r a.hide{display:none}
+}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}}
 </style>
 </head>
@@ -127,7 +199,7 @@ footer a{color:var(--muted);text-decoration:underline;text-underline-offset:3px}
   <div class="wrap nav-in">
     <a class="brand" href="../">
       <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 2.5 27 7v8.2c0 6.6-4.6 12-11 14.3C9.6 27.2 5 21.8 5 15.2V7l11-4.5Z" stroke="#f4b728" stroke-width="2.2" stroke-linejoin="round"/><path d="M11.5 11.5h9l-9 9h9" stroke="#f4b728" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      zcash-toolkit <small>playground</small>
+      zcash-toolkit <small>PLAYGROUND</small>
     </a>
     <div class="nav-r">
       <a class="hide" href="../">Overview</a>
@@ -137,210 +209,132 @@ footer a{color:var(--muted);text-decoration:underline;text-underline-offset:3px}
 </nav>
 
 <main class="wrap">
-  <header>
-    <div class="kicker">Playground</div>
-    <h1>Try the toolkit in your browser.</h1>
-    <p class="sub">Every button here runs the <b>real zcash-toolkit source</b> (<code>packages/*/src</code>, bundled with esbuild). The wallet uses the <b>mock adapter</b>: same API as the real one, notes kept in memory, <b>no real ZEC</b>. Nothing leaves this tab.</p>
-    <div class="chips">
-      <span class="chip"><i></i>real toolkit code</span>
-      <span class="chip g"><i></i>mock adapter</span>
-      <span class="chip r"><i></i>no real ZEC, no backend</span>
+  <section class="top">
+    <div>
+      <h1>Try the toolkit, <em>live.</em></h1>
+      <p>Every step runs the <b>real zcash-toolkit source</b>, bundled for the browser. The wallet uses the <b>mock adapter</b>: same API as the real one, notes kept in memory. Nothing leaves this tab.</p>
     </div>
-  </header>
+    <div class="facts" aria-label="Demo facts">
+      <div><span>code</span><b class="g">Real</b></div>
+      <div><span>adapter</span><b class="y">Mock</b></div>
+      <div><span>real ZEC</span><b class="r">None</b></div>
+    </div>
+  </section>
 
-  <div class="wallet" aria-live="polite">
-    <div class="f"><span class="k">wallet address · newAddress()</span><span class="v g" id="w-addr">…</span></div>
-    <div class="f"><span class="k">notes</span><span class="v" id="w-notes">0</span></div>
-    <div class="f"><span class="k">adapter</span><span class="v">createMockAdapter()</span></div>
-    <button class="btn" id="w-reset">Reset wallet</button>
+  <div class="lab">
+    <aside>
+      <div class="box wallet" aria-live="polite">
+        <div class="wallet-h"><span class="lbl">Wallet</span><span class="tag">mock adapter</span></div>
+        <div class="addr" id="w-addr">…</div>
+        <div class="wstats">
+          <div><span class="lbl">Notes</span><b id="w-n">0</b></div>
+          <div id="w-tbox"><span class="lbl">Transparent</span><b id="w-t">0</b></div>
+        </div>
+        <div class="nlist" id="w-list"><div class="nempty">no notes yet</div></div>
+        <button class="ghost" id="w-reset">Reset wallet</button>
+      </div>
+      <div class="box snav" role="tablist" aria-label="Scenarios" id="snav"></div>
+    </aside>
+
+    <div class="box stage" id="stage"></div>
   </div>
-
-  <!-- 01 send -->
-  <section class="card" id="c-send">
-    <div class="card-h"><h2><span class="n">01</span>Shielded send &amp; payment proof</h2><span class="pkg">@zcash-toolkit/core · @zcash-toolkit/gate</span></div>
-    <p class="card-d">Send to a shielded address, then prove that one payment to a merchant with a viewing-key proof. Try a <code>t1…</code> address to see the refusal.</p>
-    <div class="card-b">
-      <div>
-        <div class="field">
-          <label for="s-to">to</label>
-          <input id="s-to" spellcheck="false" autocomplete="off">
-          <div class="presets">
-            <button type="button" data-to="u">u1… shielded</button>
-            <button type="button" class="t" data-to="t">t1… transparent</button>
-          </div>
-        </div>
-        <div class="row">
-          <div class="field"><label for="s-amt">amount (ZEC)</label><input id="s-amt" value="0.05" inputmode="decimal"></div>
-          <div class="field"><label for="s-memo">memo</label><input id="s-memo" value="invoice #2041"></div>
-        </div>
-        <div class="btns">
-          <button class="btn gold" id="s-send"><span class="sp"></span>wallet.send()</button>
-          <button class="btn" id="s-proof" disabled><span class="sp"></span>paymentProof()</button>
-        </div>
-        <div class="field" style="margin-top:18px"><label for="s-exp">merchant expects (ZEC)</label><input id="s-exp" value="0.05" inputmode="decimal"></div>
-        <div class="btns"><button class="btn" id="s-verify" disabled>verifyPaymentProof()</button></div>
-      </div>
-      <div class="con"><div class="con-h"><span>console</span><button data-clear="send">clear</button></div><div class="con-b" id="con-send"><div class="empty">Pick an address and press wallet.send().</div></div></div>
-    </div>
-  </section>
-
-  <!-- 02 x402 -->
-  <section class="card" id="c-x402">
-    <div class="card-h"><h2><span class="n">02</span>x402 pay-per-call</h2><span class="pkg">@zcash-toolkit/x402</span></div>
-    <p class="card-d">A paid API protected by <code>requirePayment()</code> runs inside this page. Call it with plain <code>fetch()</code> to get the 402, or with <code>fetchWithPayment()</code> to pay shielded and retry with proof.</p>
-    <div class="card-b">
-      <div>
-        <div class="endpoint"><b>GET</b> https://paid-api.demo/v1/forecast<br><span>price</span> 0.001 ZEC <span>· recipient</span> <span id="x-rcpt"></span></div>
-        <div class="btns">
-          <button class="btn" id="x-plain"><span class="sp"></span>fetch()</button>
-          <button class="btn gold" id="x-paid"><span class="sp"></span>fetchWithPayment()</button>
-        </div>
-      </div>
-      <div class="con"><div class="con-h"><span>network</span><button data-clear="x402">clear</button></div><div class="con-b" id="con-x402"><div class="empty">Requests and responses appear here.</div></div></div>
-    </div>
-  </section>
-
-  <!-- 03 agent -->
-  <section class="card" id="c-agent">
-    <div class="card-h"><h2><span class="n">03</span>Agent tools &amp; spending policy</h2><span class="pkg">@zcash-toolkit/agent</span></div>
-    <p class="card-d">The same tool handlers the MCP server exposes, behind <code>SpendingPolicyEngine</code>. Call <code>send_zec</code> like an agent would and watch the policy step in.</p>
-    <div class="card-b">
-      <div>
-        <div class="row">
-          <div class="field"><label for="p-max">maxPerTx</label><input id="p-max" value="0.1" inputmode="decimal"></div>
-          <div class="field"><label for="p-day">dailyLimit</label><input id="p-day" value="0.25" inputmode="decimal"></div>
-        </div>
-        <label class="check"><input type="checkbox" id="p-allow"> allow only the merchant address</label>
-        <div class="meter"><div class="bar"><i id="p-bar"></i></div><div class="t"><span>dailySpent <b id="p-spent">0</b></span><span id="p-lim">limit 0.25</span></div></div>
-        <div class="field"><label for="t-tool">tool</label>
-          <select id="t-tool"><option>send_zec</option><option>get_address</option><option>get_history</option><option>payment_proof</option><option>get_balance</option></select></div>
-        <div class="field"><label for="t-args">arguments (JSON)</label><textarea id="t-args" spellcheck="false"></textarea></div>
-        <div class="btns"><button class="btn gold" id="t-call"><span class="sp"></span>call tool</button><button class="btn" id="p-apply">apply policy</button></div>
-      </div>
-      <div class="con"><div class="con-h"><span>tool results</span><button data-clear="agent">clear</button></div><div class="con-b" id="con-agent"><div class="empty">Try send_zec with 0.05, then 0.5, then a t1… address.</div></div></div>
-    </div>
-  </section>
-
-  <!-- 04 audit -->
-  <section class="card" id="c-audit">
-    <div class="card-h"><h2><span class="n">04</span>Privacy audit</h2><span class="pkg">@zcash-toolkit/audit</span></div>
-    <p class="card-d">Runs <code>runAudit()</code> over the wallet history. The toolkit itself never creates a transparent note, so use the buttons below to simulate incoming notes the audit should catch.</p>
-    <div class="card-b">
-      <div>
-        <div class="btns">
-          <button class="btn" id="a-t">simulate transparent deposit</button>
-          <button class="btn" id="a-d">simulate dust note</button>
-        </div>
-        <div class="btns" style="margin-top:12px"><button class="btn gold" id="a-run"><span class="sp"></span>runAudit()</button></div>
-        <div class="sum" id="a-sum" hidden></div>
-        <div class="notes"><div class="k">wallet.history()</div><div id="notes"><div class="note" style="color:var(--dim)">no notes yet</div></div></div>
-      </div>
-      <div class="con"><div class="con-h"><span>audit report</span><button data-clear="audit">clear</button></div><div class="con-b" id="con-audit"><div class="empty">Send something first, then run the audit.</div></div></div>
-    </div>
-  </section>
 </main>
 
 <footer>
   <div class="wrap">
-    Bundle: <code>docs/demo/src/entry.ts</code> re-exports <code>packages/*/src</code>. Shims: <code>events</code> and a base64 <code>Buffer</code>, nothing else.
-    Real transactions need Linux + Node 22.23.4 with <code>@zcashlabs/zcash.js</code>. <a href="https://github.com/sammy-XXIV/zcash-toolkit" target="_blank" rel="noopener">Source on GitHub</a>
+    Bundle: <code>docs/demo/src/entry.ts</code> re-exports <code>packages/*/src</code>, with two shims (<code>events</code>, base64 <code>Buffer</code>).
+    Real transactions need Linux + Node 22.23.4 and <code>@zcashlabs/zcash.js</code>. <a href="https://github.com/sammy-XXIV/zcash-toolkit" target="_blank" rel="noopener">Source</a>
   </div>
 </footer>
 
 <script type="module">
 import * as ZT from "./toolkit.js";
 
-const $ = s => document.querySelector(s);
+const $ = (s, r = document) => r.querySelector(s);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const short = s => s.length > 20 ? s.slice(0, 10) + "…" + s.slice(-6) : s;
 const MERCHANT = "u1qx7kp0merchant3vz9w9a3m8k";
 const TADDR = "t1Kz9fQxV3mRbN2pLw8sYdE4aP2";
 const PRICE = "0.001";
-const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const short = s => s.length > 22 ? s.slice(0, 12) + "…" + s.slice(-6) : s;
+const API = "https://paid-api.demo/v1/forecast";
+const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>';
 
-/* console */
+let wallet, base, extra, hooks = {}, lastSend, lastProof, policy, tools, lastAudit;
+let pol = { maxPerTx: "0.1", dailyLimit: "0.25", allow: false };
 const t0 = performance.now();
-const log = (id, msg, cls = "") => {
-  const box = $("#con-" + id);
-  box.querySelector(".empty")?.remove();
-  const e = document.createElement("div");
-  e.className = "e " + cls;
-  e.innerHTML = `<span class="ts">${((performance.now() - t0) / 1000).toFixed(2).padStart(6, "0")}</span><span class="m">${esc(msg)}</span>`;
-  box.appendChild(e);
-  box.scrollTop = box.scrollHeight;
-};
-document.querySelectorAll("[data-clear]").forEach(b => b.onclick = () => { $("#con-" + b.dataset.clear).innerHTML = ""; });
-const busy = async (btn, fn) => { btn.classList.add("busy"); btn.disabled = true; try { await fn(); } finally { btn.classList.remove("busy"); btn.disabled = false; } };
 
-/* wallet: real ZcashWallet over the mock adapter; extra[] holds simulated incoming notes for the audit */
-let wallet, policy, tools, extra, hooks = {}, lastSend = null, lastProof = null;
+/* timeline */
+const json = o => esc(JSON.stringify(o, null, 2))
+  .replace(/(&quot;[^&]*?&quot;)(\s*:)/g, '<span class="j-k">$1</span>$2')
+  .replace(/:\s(&quot;.*?&quot;)/g, ': <span class="j-s">$1</span>')
+  .replace(/:\s(-?\d+(?:\.\d+)?)/g, ': <span class="j-n">$1</span>');
+const ev = (sc, { badge, kind = "info", call, body, html }) => {
+  const tl = $(`#tl-${sc}`);
+  $(".tl-empty", tl)?.remove();
+  const el = document.createElement("div");
+  el.className = "ev " + kind;
+  const b = html ?? (body != null ? esc(body) : null);
+  el.innerHTML = `<div class="ev-h"><span class="pill k-${kind}">${esc(badge)}</span><code>${esc(call)}</code><time>t+${((performance.now() - t0) / 1000).toFixed(2)}s</time></div>${b != null ? `<pre>${b}</pre>` : ""}`;
+  tl.prepend(el);
+};
+const clearTl = sc => { $(`#tl-${sc}`).innerHTML = '<div class="tl-empty">Run a step. Output from the real toolkit lands here.</div>'; };
+
+/* wallet: real ZcashWallet over the mock adapter; extra[] holds simulated incoming notes */
 const makeWallet = async () => {
   extra = [];
-  const base = ZT.createMockAdapter();
+  base = ZT.createMockAdapter();
   const adapter = {
     ...base,
-    async send(p) { await sleep(450); const tx = await base.send(p); hooks.onSend?.(p, tx); return tx; },
-    async paymentProof(tx) { await sleep(200); return base.paymentProof(tx); },
+    async send(p) { await sleep(420); const tx = await base.send(p); hooks.onSend?.(p, tx); return tx; },
+    async paymentProof(tx) { await sleep(180); return base.paymentProof(tx); },
     async history(limit) { return [...extra, ...(await base.history(limit))].sort((a, b) => a.timestamp - b.timestamp); },
   };
   wallet = ZT.ZcashWallet.fromAdapter(adapter);
   $("#w-addr").textContent = await wallet.newAddress();
+  lastSend = lastProof = lastAudit = null;
   applyPolicy();
-  lastSend = lastProof = null;
-  $("#s-proof").disabled = $("#s-verify").disabled = true;
-  await renderNotes();
+  await renderWallet();
+};
+const renderWallet = async () => {
+  const notes = await wallet.history(100);
+  const t = notes.filter(n => n.pool === "transparent").length;
+  $("#w-n").textContent = notes.length;
+  $("#w-t").textContent = t;
+  $("#w-tbox").classList.toggle("bad", t > 0);
+  $("#w-list").innerHTML = notes.length
+    ? notes.slice(-5).reverse().map(n => `<div class="nrow"><span class="p ${n.pool}">${n.pool}</span><span class="m">${esc(n.memo || "no memo")}</span><span>${esc((+n.amount).toString())}</span></div>`).join("")
+    : '<div class="nempty">no notes yet</div>';
 };
 
-const renderNotes = async () => {
-  const notes = await wallet.history(50);
-  $("#w-notes").textContent = notes.length;
-  $("#notes").innerHTML = notes.length ? notes.slice().reverse().map(n =>
-    `<div class="note"><span class="pool ${n.pool}">${n.pool}</span><span>${esc(n.amount)}</span><span class="memo">${esc(n.memo || "no memo")} · ${esc(short(n.txid))}</span></div>`).join("")
-    : '<div class="note" style="color:var(--dim)">no notes yet</div>';
-};
+/* policy */
+function applyPolicy() {
+  const p = { maxPerTx: pol.maxPerTx, dailyLimit: pol.dailyLimit };
+  if (pol.allow) p.allowedRecipients = [MERCHANT];
+  policy = new ZT.SpendingPolicyEngine(p);
+  tools = ZT.makeWalletTools(wallet, policy);
+  renderPolicy();
+  return p;
+}
+function renderPolicy() {
+  const el = $("#pol"); if (!el || !policy) return;
+  const spent = parseFloat(policy.dailySpent), lim = parseFloat(pol.dailyLimit) || 1, pct = Math.min(100, spent / lim * 100);
+  el.innerHTML = `<div><span class="lbl">maxPerTx</span><b class="big">${esc(pol.maxPerTx)}</b></div>
+    <div><span class="lbl">dailyLimit</span><b class="big">${esc(pol.dailyLimit)}</b></div>
+    <div><span class="lbl">dailySpent</span><b class="big ${pct >= 100 ? "red" : "gold"}">${+spent.toFixed(8)}</b><div class="meter"><i style="width:${pct}%" class="${pct >= 100 ? "full" : ""}"></i></div></div>
+    <div><span class="lbl">allowlist</span><b class="big">${pol.allow ? "Merchant" : "Off"}</b></div>`;
+}
 
-/* 01 send */
-$("#s-to").value = MERCHANT;
-document.querySelectorAll("[data-to]").forEach(b => b.onclick = () => { $("#s-to").value = b.dataset.to === "t" ? TADDR : MERCHANT; });
-$("#s-send").onclick = e => busy(e.currentTarget, async () => {
-  const p = { to: $("#s-to").value.trim(), amount: $("#s-amt").value.trim(), memo: $("#s-memo").value };
-  log("send", `wallet.send({ to: "${short(p.to)}", amount: "${p.amount}", memo: "${p.memo}" })`, "dim");
-  try {
-    const txid = await wallet.send(p);
-    lastSend = { ...p, txid }; lastProof = null;
-    log("send", `✓ txid ${txid}  (orchard, shielded)`, "ok");
-    $("#s-proof").disabled = false; $("#s-verify").disabled = true;
-    $("#s-exp").value = p.amount;
-  } catch (err) {
-    log("send", `✗ ${err.message}`, "err");
-  }
-  await renderNotes();
-});
-$("#s-proof").onclick = e => busy(e.currentTarget, async () => {
-  lastProof = await wallet.paymentProof(lastSend.txid);
-  log("send", `paymentProof("${short(lastSend.txid)}")`, "dim");
-  log("send", JSON.stringify({ txid: lastProof.txid, amount: lastProof.amount, memo: lastProof.memo, viewingKeyProof: lastProof.viewingKeyProof }, null, 2), "gold");
-  log("send", "→ share this with the merchant. It reveals this payment only: no seed, no balance, no other notes.", "dim");
-  $("#s-verify").disabled = false;
-});
-$("#s-verify").onclick = () => {
-  const exp = $("#s-exp").value.trim();
-  const r = ZT.verifyPaymentProof({ txid: lastProof.txid, recipient: lastSend.to, amount: lastProof.amount, viewingKeyProof: lastProof.viewingKeyProof }, lastSend.to, exp);
-  log("send", `verifyPaymentProof(proof, "${short(lastSend.to)}", "${exp}")`, "dim");
-  log("send", r.valid ? "✓ { valid: true }" : `✗ { valid: false, reason: "${r.reason}" }`, r.valid ? "ok" : "err");
-};
-
-/* 02 x402: in-page paid API guarded by the real requirePayment() middleware */
-$("#x-rcpt").textContent = short(MERCHANT);
-const API = "https://paid-api.demo/v1/forecast";
+/* x402: in-page paid API guarded by the real requirePayment() */
 const realFetch = window.fetch.bind(window);
 window.fetch = async (input, init = {}) => {
   const url = typeof input === "string" ? input : input.url;
   if (!url.startsWith("https://paid-api.demo/")) return realFetch(input, init);
   const headers = {};
   for (const [k, v] of Object.entries(init.headers || {})) headers[k.toLowerCase()] = v;
-  log("x402", `→ GET /v1/forecast${headers["x-payment"] ? "\n  X-Payment: " + headers["x-payment"].slice(0, 44) + "…" : ""}`, "blue");
-  await sleep(320);
+  const xp = headers["x-payment"];
+  ev("x402", { badge: "GET", kind: "net", call: `GET /v1/forecast${xp ? "  ·  X-Payment attached" : ""}`, html: xp ? `<span class="j-k">X-Payment</span>: ${esc(xp.slice(0, 64))}…\n<span class="j-k">decoded</span>: ${json(ZT.parsePaymentHeader(xp))}` : null });
+  await sleep(300);
   const req = { headers };
   const out = { status: 200, body: null, headers: {} };
   const res = { setHeader(k, v) { out.headers[k] = v; }, status(c) { out.status = c; return res; }, json(b) { out.body = b; return res; } };
@@ -349,88 +343,209 @@ window.fetch = async (input, init = {}) => {
   if (paid) out.body = { city: "Lagos", forecast: "31°C, scattered storms", paidBy: "shielded", txid: req.paymentProof.txid };
   if (out.status === 402) {
     const hdr = out.headers["X-Payment-Required"];
-    log("x402", `← 402 Payment Required\n  X-Payment-Required: ${hdr.slice(0, 44)}…\n  decoded: ${JSON.stringify(ZT.parsePaymentHeader(hdr))}`, "gold");
+    ev("x402", { badge: "402", kind: "warn", call: "Payment Required  ·  requirePayment()", html: `<span class="j-k">X-Payment-Required</span>: ${esc(hdr.slice(0, 56))}…\n<span class="j-k">decoded</span>: ${json(ZT.parsePaymentHeader(hdr))}` });
   } else {
-    log("x402", `← 200 OK\n  ${JSON.stringify(out.body)}`, "ok");
+    ev("x402", { badge: "200", kind: "ok", call: "OK  ·  next() reached the handler", html: json(out.body) });
   }
   return new Response(JSON.stringify(out.body), { status: out.status, headers: { "content-type": "application/json", ...out.headers } });
 };
-$("#x-plain").onclick = e => busy(e.currentTarget, async () => {
-  log("x402", "fetch(url)", "dim");
-  const r = await fetch(API);
-  log("x402", `status ${r.status}. A plain client stops here.`, "dim");
-});
-$("#x-paid").onclick = e => busy(e.currentTarget, async () => {
-  log("x402", "fetchWithPayment(url, wallet)", "dim");
-  hooks.onSend = (p, tx) => log("x402", `  wallet.send → ${short(p.to)}  ${p.amount} ZEC  orchard\n  txid ${tx}`, "gold");
-  try {
-    const r = await ZT.fetchWithPayment(API, wallet);
-    log("x402", `done: status ${r.status}`, r.ok ? "ok" : "err");
-  } finally { hooks.onSend = null; }
-  await renderNotes(); updateMeter();
-});
 
-/* 03 agent */
-function applyPolicy() {
-  const pol = { maxPerTx: $("#p-max").value.trim(), dailyLimit: $("#p-day").value.trim() };
-  if ($("#p-allow").checked) pol.allowedRecipients = [MERCHANT];
-  policy = new ZT.SpendingPolicyEngine(pol);
-  tools = ZT.makeWalletTools(wallet, policy);
-  $("#p-lim").textContent = "limit " + pol.dailyLimit;
-  updateMeter();
-  return pol;
-}
-function updateMeter() {
-  if (!policy) return;
-  const spent = parseFloat(policy.dailySpent), lim = parseFloat($("#p-day").value) || 1;
-  $("#p-spent").textContent = (+spent.toFixed(8)).toString();
-  $("#p-bar").style.width = Math.min(100, spent / lim * 100) + "%";
-}
-const toolArgs = {
-  send_zec: () => ({ to: MERCHANT, amount: "0.05", memo: "agent task #12" }),
-  get_address: () => ({ pool: "orchard" }),
-  get_history: () => ({ limit: 5 }),
-  payment_proof: () => ({ txid: lastSend?.txid ?? "paste a txid" }),
-  get_balance: () => ({}),
+/* actions */
+const send = async (sc, p) => {
+  const call = `wallet.send({ to: "${short(p.to)}", amount: "${p.amount}"${p.memo ? `, memo: "${p.memo}"` : ""} })`;
+  try {
+    const txid = await wallet.send(p);
+    lastSend = { ...p, txid }; lastProof = null;
+    ev(sc, { badge: "sent", kind: "ok", call, html: json({ txid, pool: "orchard", to: p.to, amount: p.amount }) });
+    return { pill: "sent", kind: "ok" };
+  } catch (e) {
+    ev(sc, { badge: "refused", kind: "err", call, body: e.message });
+    return { pill: "refused", kind: "err" };
+  } finally { await renderWallet(); }
 };
-const setArgs = () => { $("#t-args").value = JSON.stringify(toolArgs[$("#t-tool").value](), null, 2); };
-$("#t-tool").onchange = setArgs; setArgs();
-$("#p-apply").onclick = () => { const p = applyPolicy(); log("agent", `new SpendingPolicyEngine(${JSON.stringify(p)})  (dailySpent reset)`, "dim"); };
-$("#t-call").onclick = e => busy(e.currentTarget, async () => {
-  const name = $("#t-tool").value;
-  let args;
-  try { args = JSON.parse($("#t-args").value || "{}"); } catch { log("agent", "✗ arguments are not valid JSON", "err"); return; }
-  log("agent", `tools.${name}(${JSON.stringify(args)})`, "dim");
+const verify = exp => {
+  const r = ZT.verifyPaymentProof({ txid: lastProof.txid, recipient: lastSend.to, amount: lastProof.amount, viewingKeyProof: lastProof.viewingKeyProof }, lastSend.to, exp);
+  ev("send", { badge: r.valid ? "valid" : "invalid", kind: r.valid ? "ok" : "err", call: `verifyPaymentProof(proof, "${short(lastSend.to)}", "${exp}")`, html: json(r) });
+  return { pill: r.valid ? "valid" : "invalid", kind: r.valid ? "ok" : "err" };
+};
+const tool = async (name, args) => {
   hooks.onSend = (p, tx) => { lastSend = { ...p, txid: tx }; };
   const r = await tools[name](args);
   hooks.onSend = null;
-  log("agent", (r.isError ? "✗ " : "✓ ") + r.content.map(c => c.text).join("\n"), r.isError ? "err" : "ok");
-  updateMeter(); await renderNotes();
-});
-
-/* 04 audit */
-const fakeTx = p => p + Math.random().toString(16).slice(2, 12);
-$("#a-t").onclick = async () => {
-  extra.push({ txid: fakeTx("legacy"), amount: "0.2", memo: "", pool: "transparent", confirmed: true, timestamp: Date.now() });
-  log("audit", "+ simulated incoming note: 0.2 ZEC, transparent pool", "dim"); await renderNotes();
+  const text = r.content.map(c => c.text).join("\n");
+  const blocked = r.isError && text.startsWith("Policy violation");
+  let body; try { body = json(JSON.parse(text)); } catch { body = esc(text); }
+  ev("agent", { badge: blocked ? "blocked" : r.isError ? "error" : "ok", kind: blocked ? "warn" : r.isError ? "err" : "ok", call: `tools.${name}(${JSON.stringify(args)})`, html: body });
+  renderPolicy(); await renderWallet();
+  return { pill: blocked ? "blocked" : r.isError ? "refused" : "ok", kind: blocked ? "warn" : r.isError ? "err" : "ok" };
 };
-$("#a-d").onclick = async () => {
-  extra.push({ txid: fakeTx("dust"), amount: "0.000001", memo: "hi", pool: "orchard", confirmed: true, timestamp: Date.now() });
-  log("audit", "+ simulated incoming note: 0.000001 ZEC, orchard", "dim"); await renderNotes();
-};
-$("#a-run").onclick = e => busy(e.currentTarget, async () => {
-  const r = await ZT.runAudit(wallet);
+const audit = async () => {
+  const r = await ZT.runAudit(wallet); lastAudit = r;
   const code = r.summary.critical > 0 ? 2 : 0;
-  log("audit", `runAudit(wallet) · ${r.notesScanned} notes scanned`, "dim");
-  if (!r.findings.length) log("audit", "✓ no findings", "ok");
-  for (const f of r.findings) log("audit", `[${f.severity}] ${f.rule}\n  ${f.message}`, f.severity === "critical" ? "err" : "gold");
-  log("audit", `zcash-audit would exit ${code}`, code ? "err" : "ok");
-  const s = $("#a-sum"); s.hidden = false;
-  s.innerHTML = `<span class="c">critical ${r.summary.critical}</span><span class="w">warn ${r.summary.warn}</span><span class="x">exit ${code}</span>`;
-});
+  ev("audit", { badge: `exit ${code}`, kind: code ? "err" : r.summary.warn ? "warn" : "ok", call: `runAudit(wallet)  ·  ${r.notesScanned} notes scanned`, html: json({ summary: r.summary, findings: r.findings.map(f => ({ severity: f.severity, rule: f.rule, txid: f.txid })) }) });
+  renderAudit();
+  return { pill: code ? "exit 2" : r.findings.length ? "warnings" : "clean", kind: code ? "err" : r.findings.length ? "warn" : "ok" };
+};
+function renderAudit() {
+  const el = $("#aud"); if (!el) return;
+  const s = lastAudit?.summary;
+  el.innerHTML = `<div><span class="lbl">critical</span><b class="big ${s?.critical ? "red" : ""}">${s ? s.critical : "–"}</b></div>
+    <div><span class="lbl">warn</span><b class="big ${s?.warn ? "gold" : ""}">${s ? s.warn : "–"}</b></div>
+    <div><span class="lbl">cli exit code</span><b class="big ${s ? (s.critical ? "red" : "green") : ""}">${s ? (s.critical ? 2 : 0) : "–"}</b></div>`;
+}
+const simulate = async (note, label) => {
+  extra.push({ txid: (note.pool === "transparent" ? "legacy" : "dust") + Math.random().toString(16).slice(2, 12), confirmed: true, timestamp: Date.now(), ...note });
+  ev("audit", { badge: "simulated", kind: "info", call: label, body: "Incoming note added to history. The toolkit never creates this; the audit should catch it." });
+  await renderWallet();
+  return { pill: "added", kind: "info" };
+};
 
-$("#w-reset").onclick = async () => { await makeWallet(); ["send", "x402", "agent", "audit"].forEach(id => log(id, "wallet reset", "dim")); $("#a-sum").hidden = true; };
+/* scenarios */
+const S = [
+  {
+    id: "send", n: "01", t: "Shielded send", s: "core · gate", pk: "@zcash-toolkit/core · @zcash-toolkit/gate",
+    d: "Payments are shielded or they do not happen. Then one payment is proven to one merchant with a viewing-key proof.",
+    steps: [
+      { t: "Send to a transparent address", s: "The wallet should refuse before anything is built.", b: "Send to t1…", run: () => send("send", { to: TADDR, amount: "0.05", memo: "test" }) },
+      { t: "Send 0.05 ZEC, shielded", s: "Orchard note to the merchant's unified address.", b: "Send", run: () => send("send", { to: MERCHANT, amount: "0.05", memo: "invoice #2041" }) },
+      { t: "Create a payment proof", s: "Viewing-key disclosure for this payment only.", b: "paymentProof()", need: () => lastSend, run: async () => {
+        lastProof = await wallet.paymentProof(lastSend.txid);
+        ev("send", { badge: "proof", kind: "warn", call: `wallet.paymentProof("${short(lastSend.txid)}")`, html: json(lastProof) });
+        return { pill: "proof", kind: "warn" };
+      } },
+      { t: "Merchant verifies, expects 0.05", s: "Amount and recipient match.", b: "Verify", need: () => lastProof, run: async () => verify(lastSend.amount) },
+      { t: "Merchant verifies, expects 0.50", s: "Underpayment is rejected.", b: "Verify", need: () => lastProof, run: async () => verify("0.5") },
+    ],
+    custom: `<div class="wide"><label for="c-to">to</label><input id="c-to" value="${MERCHANT}" spellcheck="false"></div>
+      <div><label for="c-amt">amount</label><input id="c-amt" value="0.02" inputmode="decimal"></div>
+      <div><label for="c-memo">memo</label><input id="c-memo" value="coffee"></div>
+      <div><button class="btn gold" id="c-send"><span class="sp"></span>wallet.send()</button></div>`,
+    bind: () => { $("#c-send").onclick = e => busy(e.currentTarget, async () => { await send("send", { to: $("#c-to").value.trim(), amount: $("#c-amt").value.trim(), memo: $("#c-memo").value }); refresh(); }); },
+  },
+  {
+    id: "x402", n: "02", t: "x402 pay-per-call", s: "x402", pk: "@zcash-toolkit/x402",
+    d: "A paid API guarded by requirePayment() runs inside this page. fetchWithPayment() reads the 402, pays shielded and retries with proof.",
+    panel: `<div><span class="lbl">endpoint</span><b>GET /v1/forecast</b></div><div><span class="lbl">price</span><b class="big gold">0.001 ZEC</b></div><div><span class="lbl">recipient</span><b>${short(MERCHANT)}</b></div>`,
+    steps: [
+      { t: "Call with plain fetch()", s: "No wallet. The server answers 402 with a payment request.", b: "fetch()", run: async () => { const r = await fetch(API); return { pill: String(r.status), kind: "warn" }; } },
+      { t: "Call with fetchWithPayment()", s: "402, shielded payment, retry with X-Payment, 200.", b: "fetchWithPayment()", run: async () => {
+        hooks.onSend = (p, tx) => ev("x402", { badge: "paid", kind: "ok", call: `wallet.send → ${short(p.to)}  ·  ${p.amount} ZEC  ·  orchard`, html: json({ txid: tx, memo: p.memo }) });
+        try { const r = await ZT.fetchWithPayment(API, wallet); return { pill: String(r.status), kind: r.ok ? "ok" : "err" }; }
+        finally { hooks.onSend = null; await renderWallet(); }
+      } },
+    ],
+  },
+  {
+    id: "agent", n: "03", t: "Agent policy", s: "agent · MCP tools", pk: "@zcash-toolkit/agent",
+    d: "The same tool handlers the MCP server gives an AI agent, wrapped in SpendingPolicyEngine. Call send_zec the way an agent would.",
+    panel: '<div id="pol" style="display:contents"></div>',
+    steps: [
+      { t: "send_zec 0.05 ZEC", s: "Within every limit.", b: "Call tool", run: () => tool("send_zec", { to: MERCHANT, amount: "0.05", memo: "agent task #12" }) },
+      { t: "send_zec 0.50 ZEC", s: "Over maxPerTx. The policy blocks it.", b: "Call tool", run: () => tool("send_zec", { to: MERCHANT, amount: "0.5" }) },
+      { t: "send_zec 0.09 ZEC, repeat", s: "Click until the daily limit stops the agent.", b: "Call tool", run: () => tool("send_zec", { to: MERCHANT, amount: "0.09" }) },
+      { t: "send_zec to a t1… address", s: "Policy allows it, the wallet still refuses.", b: "Call tool", run: () => tool("send_zec", { to: TADDR, amount: "0.01" }) },
+      { t: "get_history", s: "What the agent can read back.", b: "Call tool", run: () => tool("get_history", { limit: 5 }) },
+    ],
+    custom: `<div><label for="c-max">maxPerTx</label><input id="c-max" value="0.1" inputmode="decimal"></div>
+      <div><label for="c-day">dailyLimit</label><input id="c-day" value="0.25" inputmode="decimal"></div>
+      <div><label class="chk"><input type="checkbox" id="c-allow"> merchant only</label></div>
+      <div class="wide"><button class="btn" id="c-apply">Apply policy (resets dailySpent)</button></div>
+      <div><label for="c-tool">tool</label><select id="c-tool"><option>send_zec</option><option>get_address</option><option>get_balance</option><option>get_history</option><option>payment_proof</option></select></div>
+      <div style="grid-column:span 2"><label for="c-args">arguments (JSON)</label><input id="c-args" spellcheck="false"></div>
+      <div><button class="btn gold" id="c-call"><span class="sp"></span>Call tool</button></div>`,
+    bind: () => {
+      const presets = { send_zec: () => ({ to: MERCHANT, amount: "0.03" }), get_address: () => ({ pool: "orchard" }), get_balance: () => ({}), get_history: () => ({ limit: 5 }), payment_proof: () => ({ txid: lastSend?.txid ?? "" }) };
+      const set = () => { $("#c-args").value = JSON.stringify(presets[$("#c-tool").value]()); };
+      $("#c-tool").onchange = set; set();
+      $("#c-apply").onclick = () => {
+        pol = { maxPerTx: $("#c-max").value.trim(), dailyLimit: $("#c-day").value.trim(), allow: $("#c-allow").checked };
+        ev("agent", { badge: "policy", kind: "info", call: "new SpendingPolicyEngine(...)", html: json(applyPolicy()) });
+      };
+      $("#c-call").onclick = e => busy(e.currentTarget, async () => {
+        let args; try { args = JSON.parse($("#c-args").value || "{}"); } catch { ev("agent", { badge: "error", kind: "err", call: "arguments", body: "Not valid JSON." }); return; }
+        await tool($("#c-tool").value, args); refresh();
+      });
+    },
+  },
+  {
+    id: "audit", n: "04", t: "Privacy audit", s: "audit · CLI", pk: "@zcash-toolkit/audit",
+    d: "runAudit() scans history for transparent-pool notes, missing memos and dust. The CLI exits 2 on any critical finding, so CI can block a leak.",
+    panel: '<div id="aud" style="display:contents"></div>',
+    steps: [
+      { t: "Run the audit", s: "Scans the current wallet history.", b: "runAudit()", run: audit },
+      { t: "Simulate a transparent deposit", s: "Someone sends you 0.2 ZEC from a t-address.", b: "Add note", run: () => simulate({ amount: "0.2", memo: "", pool: "transparent" }, "incoming note · 0.2 ZEC · transparent pool") },
+      { t: "Simulate a dust note", s: "A 0.000001 ZEC note, a common linkage trick.", b: "Add note", run: () => simulate({ amount: "0.000001", memo: "hi", pool: "orchard" }, "incoming note · 0.000001 ZEC · orchard") },
+      { t: "Run the audit again", s: "Critical finding, exit code 2.", b: "runAudit()", run: audit },
+    ],
+  },
+];
+
+const done = {};
+const busy = async (btn, fn) => { btn.classList.add("busy"); btn.disabled = true; try { return await fn(); } finally { btn.classList.remove("busy"); btn.disabled = false; } };
+
+const build = () => {
+  $("#snav").innerHTML = S.map(sc => `<button role="tab" data-sc="${sc.id}" aria-controls="sc-${sc.id}"><span class="n">${sc.n}</span><span><span class="t">${sc.t}</span><span class="s">${sc.s}</span></span><span class="st" id="st-${sc.id}">${CHECK}</span></button>`).join("");
+  $("#stage").innerHTML = S.map(sc => `
+    <section class="scn" id="sc-${sc.id}" role="tabpanel">
+      <div class="sc-h"><h2><span>${sc.n}</span>${sc.t}</h2><span class="pk">${sc.pk}</span></div>
+      <p class="sc-d">${esc(sc.d)}</p>
+      ${sc.panel ? `<div class="panel">${sc.panel}</div>` : ""}
+      <ol class="steps">${sc.steps.map((st, i) => `
+        <li class="step" id="${sc.id}-${i}"><span class="num">${i + 1}</span>
+          <div><div class="st-t">${esc(st.t)}<span class="res"></span></div><div class="st-s">${esc(st.s)}</div></div>
+          <button class="btn" data-run="${sc.id}:${i}"><span class="sp"></span>${esc(st.b)}</button></li>`).join("")}</ol>
+      ${sc.custom ? `<details class="custom"><summary>Custom input</summary><div class="cbody">${sc.custom}</div></details>` : ""}
+      <div class="out"><div class="out-h"><span class="lbl">Output · newest first</span><button data-clear="${sc.id}">clear</button></div><div class="tl" id="tl-${sc.id}"></div></div>
+    </section>`).join("");
+  S.forEach(sc => { clearTl(sc.id); sc.bind?.(); done[sc.id] = new Set(); });
+  document.querySelectorAll("[data-sc]").forEach(b => b.onclick = () => show(b.dataset.sc, true));
+  document.querySelectorAll("[data-clear]").forEach(b => b.onclick = () => clearTl(b.dataset.clear));
+  document.querySelectorAll("[data-run]").forEach(b => b.onclick = async () => {
+    const [id, i] = b.dataset.run.split(":"), st = S.find(s => s.id === id).steps[+i];
+    const r = await busy(b, st.run);
+    done[id].add(+i);
+    if (r) $(`#${id}-${i} .res`).innerHTML = `<span class="pill k-${r.kind}">${esc(r.pill)}</span>`;
+    refresh();
+  });
+};
+
+const refresh = () => {
+  for (const sc of S) {
+    const d = done[sc.id];
+    const next = sc.steps.findIndex((st, i) => !d.has(i) && (!st.need || st.need()));
+    sc.steps.forEach((st, i) => {
+      const li = $(`#${sc.id}-${i}`), ok = !st.need || !!st.need();
+      li.classList.toggle("done", d.has(i));
+      li.classList.toggle("next", i === next);
+      li.classList.toggle("locked", !ok);
+      $("button", li).disabled = !ok;
+    });
+    const s = $(`#st-${sc.id}`);
+    s.classList.toggle("full", d.size === sc.steps.length);
+    s.classList.toggle("part", d.size > 0 && d.size < sc.steps.length);
+  }
+};
+
+const show = (id, push) => {
+  if (!S.some(s => s.id === id)) id = "send";
+  document.querySelectorAll(".scn").forEach(s => s.classList.toggle("on", s.id === "sc-" + id));
+  document.querySelectorAll("[data-sc]").forEach(b => { const on = b.dataset.sc === id; b.classList.toggle("on", on); b.setAttribute("aria-selected", on); });
+  if (push) history.replaceState(null, "", "#" + id);
+};
+
+$("#w-reset").onclick = async () => {
+  await makeWallet();
+  S.forEach(sc => { done[sc.id].clear(); clearTl(sc.id); });
+  document.querySelectorAll(".res").forEach(r => r.innerHTML = "");
+  renderAudit(); refresh();
+};
+
+build();
 await makeWallet();
+renderAudit();
+refresh();
+show(location.hash.slice(1));
+addEventListener("hashchange", () => show(location.hash.slice(1)));
 </script>
 </body>
 </html>
